@@ -7,6 +7,8 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<title>Time Saver</title>
+
+	<link rel="icon" href="/images/fav.png">
 	
 	<!-- Bootstrap Core CSS -->
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +37,7 @@
 								<span class="icon-bar"></span>
 								<span class="icon-bar"></span>
 							</button>
-							<a class="navbar-brand" href="/">Home</a>
+							<a class="navbar-brand" href="/"><img class="logo_bc" src="/images/logo_white.svg" alt="home"></a>
 						</div>
 						<!-- Top Menu Items -->
 						<ul class="nav navbar-right top-nav">
@@ -50,19 +52,19 @@
 											<a href="/users/profile"><i class="fa fa-fw fa-user"></i> Profile</a>
 										</li>
 										<li>
-											<a href="/users/profile/my_logs"><i class="fa fa-fw fa-envelope"></i> My Logs</a>
+											<a href="/users/profile/my_logs"><i class="fa fa-fw fa-envelope"></i> Moje zapisy</a>
 										</li>
 										<li class="divider"></li>
 										<li role="presentation">
-											<a href="/users/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Log Out</a>
+											<a href="/users/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Wyloguj się</a>
 										</li>
 									{{else}}
 										<li role="presentation">
-											<a href="/users/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Log In</a>
+											<a href="/users/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Zaloguj się</a>
 										</li>
 										<li class="divider"></li>
 										<li role="presentation">
-											<a href="/users/register"><i class="fa fa-registered" aria-hidden="true"></i> Register</a>
+											<a href="/users/register"><i class="fa fa-registered" aria-hidden="true"></i> Rejestracja</a>
 										</li>
 									{{/if}}
 								</ul>
@@ -81,11 +83,11 @@
 										<a href="/users/profile"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
 									</li>
 									<li>
-										<a href="/users/profile/my_logs"><i class="fa fa-fw fa-table"></i> My Logs</a>
+										<a href="/users/profile/my_logs"><i class="fa fa-fw fa-table"></i> Moje zapisy</a>
 									</li>
 									{{#ifEquals user.status "admin"}}
 										<li>
-											<a href="/users/profile/all_logs"><i class="fa fa-fw fa-table"></i> All Logs</a>
+											<a href="/users/profile/all_logs"><i class="fa fa-fw fa-table"></i> Wszystkie zapisy</a>
 											<!-- <a href="javascript:;" data-toggle="collapse" data-target="#all_logs">
 												<i class="fa fa-fw fa-arrows-v"></i> All logs <i class="fa fa-fw fa-caret-down"></i>
 											</a>
@@ -100,7 +102,7 @@
 										</li>
 									  <li>
 											<a href="javascript:;" data-toggle="collapse" data-target="#all_users">
-												<i class="fa fa-users" aria-hidden="true"></i> Users logs <i class="fa fa-fw fa-caret-down"></i>
+												<i class="fa fa-users" aria-hidden="true"></i> Zapisy użytkowników <i class="fa fa-fw fa-caret-down"></i>
 											</a>
 											<ul id="all_users" class="collapse">
 											  {{#each users }}

@@ -11,20 +11,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var network = require('network');
-
-var cronJob = require('cron').CronJob;
-
-var job = new cronJob({
-  cronTime: '00 30 23 * * *',
-  onTick: function() {
-  // Runs everyday
-  // at exactly 23:30:00.
-    console.log('backup');
-  },
-  start: false
-});
-
-job.start();
+var lang = require('./public/js/lang.js').lang;
 
 var debug_mode = true;
 
@@ -48,7 +35,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));  
  
 db.once('open', function() {
-  console.log('Great');
+  console.log(lang["connected_mongo"]);
   // Wait for the database connection to establish, then start the app.                         
 });
 
@@ -74,6 +61,7 @@ app.use(cookieParser());
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
+//app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // Express Session
 app.use(session({
@@ -142,5 +130,5 @@ network.get_active_interface(function(err, obj) {
 app.set('port', (process.env.PORT || 5000));
 
 app.listen(app.get('port'), function(){
-  console.log('Server started on port '+app.get('port'));
+  console.log(lang["server_started"]+app.get('port'));
 });

@@ -2,9 +2,19 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var lang = require('../public/js/lang.js').lang;
+var backup = require('mongodb-backup');
+var cronJob = require('cron').CronJob;
 
 var User = require('../models/user');
 var Log = require('../models/log');
+
+var monthNames = [0, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+function checkLenght(text) {
+  if (text < 10) text = '0' + text;
+  return text;
+}
 
 function getUsers(docs) {
   var chunkSize = 1;
@@ -16,21 +26,94 @@ function getUsers(docs) {
   return userChunks;
 }
 
-function less_than_ten(text) {
+function getLogsByStatus(docs, status) {
+  var chunkSize = 1;
+  var logChunks = [];
 
-  if( text < 10 ) { 
-    text = '0' + text; 
+  for (var i = 0; i < docs.length; i += chunkSize) {
+    if(docs[i].status == status) {
+      logChunks.push(docs[i]);
+    }
   }
 
-  return text;
+  return logChunks;
+}
+
+function getTimeString() {
+  var date_now = new Date();
+
+  var hours = checkLenght(date_now.getHours());
+  var minutes = checkLenght(date_now.getMinutes());
+
+  var time = hours+':'+minutes;
+
+  return time;
+}
+
+
+function isUserNameExist(username) {
+  var query = {username: username};
+  
+  var callback = function callback(err, user) {
+    if(err) console.log(err);
+    if(user.username) return true;
+  }
+
+  return User.findOne(query, callback);
+}
+
+function setLogsByStatus(docs, option) {
+  var chunkSize = 1;
+
+  var status = 'overed';
+
+  var time = '18:00';
+  
+  for (var i = 0; i < docs.length; i += chunkSize) {
+
+    var criteria = option;
+
+    Log.update(criteria, {status: status, time_over: time, sum_time: getSumTime(docs[i].time_start, time) }, function(err) {
+      if(err) console.log(err);
+    });
+    
+  }
+}
+
+function convertMinutes(time) {
+  time = time.split(':');
+  time = Number(time[0]) * 60 + Number(time[1]);
+
+  return time;
+}
+
+function getSumTime(time_start, time_over) {
+
+  var chunkSize = 1;
+  
+  time_start = convertMinutes(time_start);
+  time_over = convertMinutes(time_over);
+  
+  var sum_time = time_over - time_start;
+
+  if(sum_time>=60) {
+    sum_hours = Math.floor(sum_time/60);
+    sum_minutes = sum_time%60;
+    
+    sum_hours = checkLenght(sum_hours);
+    sum_minutes = checkLenght(sum_minutes);
+
+    sum_time = sum_hours+':'+sum_minutes;
+  } else {
+    sum_time = checkLenght(sum_time);
+    sum_time = '00:'+sum_time;  
+  }
+
+  return sum_time;
 }
 
 function getTimeOfMonth(docs, month, username) {
   var chunkSize = 1;
-
-  var monthNames = [0, "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
 
   var sum_time = 0;
 
@@ -41,9 +124,7 @@ function getTimeOfMonth(docs, month, username) {
       docs[i].month = Number(dateNow[1]);
 
       if(docs[i].month == month && docs[i].status == 'overed') {
-        this_t = docs[i].sum_time.split(':');
-        this_t = Number(this_t[0]) * 60 + Number(this_t[1]);
-        sum_time += this_t; 
+        sum_time += convertMinutes(docs[i].sum_time); 
       }
     }
 
@@ -52,9 +133,7 @@ function getTimeOfMonth(docs, month, username) {
       docs[i].month = Number(dateNow[1]);
 
       if(docs[i].month == month && docs[i].status == 'overed') {
-        this_t = docs[i].sum_time.split(':');
-        this_t = Number(this_t[0]) * 60 + Number(this_t[1]);
-        sum_time += this_t; 
+        sum_time += convertMinutes(docs[i].sum_time); 
       }
     }
   }
@@ -63,12 +142,12 @@ function getTimeOfMonth(docs, month, username) {
     sum_hours = Math.floor(sum_time/60);
     sum_minutes = sum_time%60;
 
-    sum_hours = less_than_ten(sum_hours);
-    sum_minutes = less_than_ten(sum_minutes);
+    sum_hours = checkLenght(sum_hours);
+    sum_minutes = checkLenght(sum_minutes);
     
     sum_time = sum_hours+':'+sum_minutes;
   } else {
-    sum_time = less_than_ten(sum_time);
+    sum_time = checkLenght(sum_time);
     sum_time = '00:'+sum_time;  
   }
 
@@ -76,17 +155,9 @@ function getTimeOfMonth(docs, month, username) {
 
 }
 
-function getMyLogs(docs, username) {
+function setDateAdvancedByUsername(docs, username) {
+  
   var chunkSize = 1;
-  var logChunks = [];
-
-  var monthNames = [0, "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  docs.sort(function(a,b) { 
-    return new Date(a.date).getTime() - new Date(b.date).getTime() 
-  });
 
   for (var i = 0; i < docs.length; i += chunkSize) {
     if(docs[i].username == username) {
@@ -96,6 +167,102 @@ function getMyLogs(docs, username) {
       docs[i].year = Number(dateNow[2]);
     }
   }
+}
+
+function setDateAdvanced(docs) {
+  
+  var chunkSize = 1;
+
+  for (var i = 0; i < docs.length; i += chunkSize) {
+    var dateNow = docs[i].date.split('/');
+    docs[i].day = Number(dateNow[0]);
+    docs[i].month = Number(dateNow[1]);
+    docs[i].year = Number(dateNow[2]);
+  }
+}
+
+function setDateBreak(docs, logChunks) {
+  
+  var chunkSize = 1;
+
+  for (var i = 0; i < docs.length; i += chunkSize) {
+    var monthNow = docs[i].month;
+    
+    if(i!=0) {
+      var monthBefore = docs[i-1].month;
+    } else {
+      var monthBefore = monthNow;
+    }
+    
+    if(i==docs.length-1) {
+      var monthAfter = monthNow;
+    } else {
+      if(i<docs.length-1) {
+        var monthAfter = docs[i+1].month;
+      }
+    }
+
+    docs[i].monthName = monthNames[monthNow];
+
+    var breakBefore = true;
+    var breakAfter = true;
+
+    if(i>0) {
+
+      if(i!=docs.length) {
+        if(monthNow != monthAfter) {
+          breakAfter = true;
+        } else {
+          breakAfter = false;
+        }
+      } else {
+        breakAfter = true;
+      }
+
+      if(monthNow != monthBefore) {
+        breakBefore = true;
+      } else {
+        breakBefore = false;
+      }
+
+      if(i == docs.length-1) {
+        breakAfter = true;
+      }
+
+    } else {
+      breakBefore = true;
+
+      if(monthNow != monthAfter) {
+        breakAfter = true;
+      } else {
+        breakAfter = false;
+      }
+    }
+
+    if(breakBefore) {
+      docs[i].beforeBreak = true;
+    } else {
+      docs[i].beforeBreak = false;
+    }
+
+    
+    if(breakAfter) {
+      docs[i].afterBreak = true;
+    } else {
+      docs[i].afterBreak = false;
+    }
+    
+    if(breakAfter) {
+      docs[i].all_time = getTimeOfMonth(docs, docs[i].month, false);      
+    }
+
+    logChunks.push(docs[i]);
+  }
+  
+}
+
+function setDateBreakByUsername(docs, logChunks, username) {
+  var chunkSize = 1;
 
   for (var i = 0; i < docs.length; i += chunkSize) {
     if(docs[i].username == username) {
@@ -150,6 +317,7 @@ function getMyLogs(docs, username) {
         } else {
           breakAfter = false;
         }
+
       }
 
       if(breakBefore) {
@@ -170,25 +338,44 @@ function getMyLogs(docs, username) {
       }
 
       logChunks.push(docs[i]);
-
     }
-  } 
+  }
+}
+
+function getMyLogs(docs, username) {
+  var chunkSize = 1;
+  var logChunks = [];
+
+  docs.sort(function(a,b) { 
+    return new Date(a.date).getTime() - new Date(b.date).getTime() 
+  });
+
+  setDateAdvancedByUsername(docs, username);
+
+  setDateBreakByUsername(docs, logChunks, username);
 
   return logChunks;
+}
+
+function getDateString(option) {
+  var date_now = new Date();
+  var day = checkLenght(date_now.getDate());
+  var month = checkLenght(date_now.getMonth()+1);
+  var year = date_now.getFullYear();
+
+  if(option == 'slash') {
+    var date = day+'/'+month+'/'+year;
+  } else {
+    var date = day+'_'+month+'_'+year;
+  }
+
+  return date;
 }
 
 function getMyLastLog(docs, username) {
   var chunkSize = 1;
 
-  var date_now = new Date();
-  var day = date_now.getDate();
-  var month = date_now.getMonth()+1;
-  var year = date_now.getFullYear();
-
-  month = less_than_ten(month);
-  day = less_than_ten(day);
-
-  var date = day+'/'+month+'/'+year;
+  var date = getDateString('slash');
 
   for (var i = 0; i < docs.length; i += chunkSize) {
     if(docs[i].username == username) {
@@ -203,98 +390,17 @@ function getMyLastLog(docs, username) {
   }
 }
 
-function getAllLogs(docs) {
+function getLogs(docs) {
   var chunkSize = 1;
   var logChunks = [];
-
-  var monthNames = [0, "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
 
   docs.sort(function(a,b) { 
     return new Date(a.date).getTime() - new Date(b.date).getTime() 
   });
 
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    var dateNow = docs[i].date.split('/');
-    docs[i].day = Number(dateNow[0]);
-    docs[i].month = Number(dateNow[1]);
-    docs[i].year = Number(dateNow[2]);
-  }
+  setDateAdvanced(docs);
 
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    var monthNow = docs[i].month;
-    
-    if(i!=0) {
-      var monthBefore = docs[i-1].month;
-    } else {
-      var monthBefore = monthNow;
-    }
-    
-    if(i==docs.length-1) {
-      var monthAfter = monthNow;
-    } else {
-      if(i<docs.length-1) {
-        var monthAfter = docs[i+1].month;
-      }
-    }
-
-    docs[i].monthName = monthNames[monthNow];
-
-    var breakBefore = true;
-    var breakAfter = true;
-
-    if(i>0) {
-
-      if(i!=docs.length) {
-        if(monthNow != monthAfter) {
-          breakAfter = true;
-        } else {
-          breakAfter = false;
-        }
-      } else {
-        breakAfter = true;
-      }
-
-      if(monthNow != monthBefore) {
-        breakBefore = true;
-      } else {
-        breakBefore = false;
-      }
-
-      if(i == docs.length-1) {
-        breakAfter = true;
-      }
-
-    } else {
-      breakBefore = true;
-
-      if(monthNow != monthAfter) {
-        breakAfter = true;
-      } else {
-        breakAfter = false;
-      }
-    }
-
-    if(breakBefore) {
-      docs[i].beforeBreak = true;
-    } else {
-      docs[i].beforeBreak = false;
-    }
-
-    
-    if(breakAfter) {
-      docs[i].afterBreak = true;
-    } else {
-      docs[i].afterBreak = false;
-    }
-    
-    if(breakAfter) {
-      docs[i].all_time = getTimeOfMonth(docs, docs[i].month, false);      
-    }
-
-    logChunks.push(docs[i]);
-  } 
+  setDateBreak(docs, logChunks);
 
   return logChunks;
 }
@@ -303,99 +409,13 @@ function getLogsByName(docs, usename) {
   var chunkSize = 1;
   var logChunks = [];
 
-  var monthNames = [0, "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
   docs.sort(function(a,b) { 
     return new Date(a.date).getTime() - new Date(b.date).getTime() 
   });
 
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    if(docs[i].username == username) {
-      var dateNow = docs[i].date.split('/');
-      docs[i].day = Number(dateNow[0]);
-      docs[i].month = Number(dateNow[1]);
-      docs[i].year = Number(dateNow[2]);
-    }
-  }
+  setDateAdvancedByUsername(docs, username);
 
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    if(docs[i].username == username) {
-      var monthNow = docs[i].month;
-      
-      if(i!=0) {
-        var monthBefore = docs[i-1].month;
-      } else {
-        var monthBefore = monthNow;
-      }
-      
-      if(i==docs.length-1) {
-        var monthAfter = monthNow;
-      } else {
-        if(i<docs.length-1) {
-          var monthAfter = docs[i+1].month;
-        }
-      }
-
-      docs[i].monthName = monthNames[monthNow];
-
-      var breakBefore = true;
-      var breakAfter = true;
-
-      if(i>0) {
-
-        if(i!=docs.length) {
-          if(monthNow != monthAfter) {
-            breakAfter = true;
-          } else {
-            breakAfter = false;
-          }
-        } else {
-          breakAfter = true;
-        }
-
-        if(monthNow != monthBefore) {
-          breakBefore = true;
-        } else {
-          breakBefore = false;
-        }
-
-        if(i == docs.length-1) {
-          breakAfter = true;
-        }
-
-      } else {
-        breakBefore = true;
-
-        if(monthNow != monthAfter) {
-          breakAfter = true;
-        } else {
-          breakAfter = false;
-        }
-      }
-
-      if(breakBefore) {
-        docs[i].beforeBreak = true;
-      } else {
-        docs[i].beforeBreak = false;
-      }
-
-      
-      if(breakAfter) {
-        docs[i].afterBreak = true;
-      } else {
-        docs[i].afterBreak = false;
-      }
-      
-      if(breakAfter) {
-        docs[i].all_time = getTimeOfMonth(docs, docs[i].month, username);      
-      }
-
-      logChunks.push(docs[i]);
-
-    }
-  } 
+  setDateBreakByUsername(docs, logChunks, username);
 
   return logChunks;
 }
@@ -404,95 +424,13 @@ function getLogsByMonth(docs, username) {
   var chunkSize = 1;
   var logChunks = [];
 
-  var monthNames = [0, "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
   docs.sort(function(a,b) { 
     return new Date(a.date).getTime() - new Date(b.date).getTime() 
   });
 
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    var dateNow = docs[i].date.split('/');
-    docs[i].day = Number(dateNow[0]);
-    docs[i].month = Number(dateNow[1]);
-    docs[i].year = Number(dateNow[2]);
-  }
-
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    var monthNow = docs[i].month;
-    
-    if(i!=0) {
-      var monthBefore = docs[i-1].month;
-    } else {
-      var monthBefore = monthNow;
-    }
-    
-    if(i==docs.length-1) {
-      var monthAfter = monthNow;
-    } else {
-      if(i<docs.length-1) {
-        var monthAfter = docs[i+1].month;
-      }
-    }
-
-    docs[i].monthName = monthNames[monthNow];
-
-    var breakBefore = true;
-    var breakAfter = true;
-
-    if(i>0) {
-
-      if(i!=docs.length) {
-        if(monthNow != monthAfter) {
-          breakAfter = true;
-        } else {
-          breakAfter = false;
-        }
-      } else {
-        breakAfter = true;
-      }
-
-      if(monthNow != monthBefore) {
-        breakBefore = true;
-      } else {
-        breakBefore = false;
-      }
-
-      if(i == docs.length-1) {
-        breakAfter = true;
-      }
-
-    } else {
-      breakBefore = true;
-
-      if(monthNow != monthAfter) {
-        breakAfter = true;
-      } else {
-        breakAfter = false;
-      }
-    }
-
-    if(breakBefore) {
-      docs[i].beforeBreak = true;
-    } else {
-      docs[i].beforeBreak = false;
-    }
-
-    
-    if(breakAfter) {
-      docs[i].afterBreak = true;
-    } else {
-      docs[i].afterBreak = false;
-    }
-    
-    if(breakAfter) {
-      docs[i].all_time = getTimeOfMonth(docs, docs[i].month, false);      
-    }
-
-    logChunks.push(docs[i]);
-
-  }
+  setDateAdvancedByUsername(docs, username);
+  
+  setDateBreakByUsername(docs, logChunks);
   
   return logChunks;
 }
@@ -501,7 +439,7 @@ function isAuthenticated(req, res, next){
   if(req.isAuthenticated())
     return next();
   else {
-    req.flash('error_msg', 'You are not logged in');
+    req.flash('error_msg', lang['not_logged_in']);
     res.render('index');
   }
 }
@@ -510,7 +448,7 @@ function isNotAuthenticated(req, res, next){
   if(!req.isAuthenticated())
     return next();
   else {
-    req.flash('error_msg', 'You are logged in');
+    req.flash('error_msg', lang['logged_in']);
     res.render('index');
   }
 }
@@ -541,25 +479,24 @@ router.get('/profile', function(req, res){
 
       if(button!='start' && button!='end') {
         button = 'primary';
-        title = 'Kliknij żeby rozpocząć pracę';
+        title = lang['click_start'];
         
       } else {
         if(button=='start') {
           button = 'danger';
-          title = 'Kliknij żeby skończyć pracę';
+          title = lang['click_end'];
         }
 
         if(button=='end') {
           button = 'default disabled';
-          title = 'Na dzisiaj praca jest skończona';
+          title = lang['unclickable'];
         }
       }
 
       User.find(function(err, docs) {
-        
         userChunks = getUsers(docs);
         
-        res.render('profile', { title: 'Profile', desc: 'Welcome to your profile page', users: userChunks, logs: logChunks, button_status: button, button_title: title});
+        res.render('profile', { title: lang['profile'], desc: lang['wc_profile'], users: userChunks, logs: logChunks, button_status: button, button_title: title});
       });
 
     });
@@ -574,8 +511,8 @@ router.get('/profile', function(req, res){
 router.get('/profile/my_logs', function(req, res){
 
   var local_username = res.locals.user.username;
-  var title = 'My logs';
-  var desc = 'Welcome to your logs';
+  var title = lang['my_logs'];
+  var desc = lang['wc_my_logs'];
 
   if(req.isAuthenticated()) {
     Log.find(function(err, docs) {
@@ -602,14 +539,14 @@ router.get('/profile/my_logs', function(req, res){
 // All Logs
 router.get('/profile/all_logs', function(req, res){
 
-  var title = 'All logs';
+  var title = lang['all_logs'];
 
   if(req.isAuthenticated()) {
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
 
-      logChunks = getAllLogs(docs);
+      logChunks = getLogs(docs);
 
       User.find(function(err, docs) {
         
@@ -627,14 +564,14 @@ router.get('/profile/all_logs', function(req, res){
 
 router.get('/profile/logs_by_month', function(req, res){
 
-  var title = 'Logs by month';
+  var title = lang['logs_by_month'];
 
   if(req.isAuthenticated()) {
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
       
-      logChunks = getAllLogs(docs);
+      logChunks = getLogs(docs);
 
       User.find(function(err, docs) {
         
@@ -653,8 +590,8 @@ router.get('/profile/logs_by_month', function(req, res){
 router.get('/profile/logs_by_user/:username', function(req, res){
 
   var username = req.params.username;
-  var title = 'Logs of ' + username;
-  var desc = 'Welcome to '+username+' logs';
+  var title = lang['logs_by_user'] + username;
+  var desc = lang['wc_logs_by_user'] + username;
   
 
   if(req.isAuthenticated()) {
@@ -682,25 +619,14 @@ router.get('/profile/logs_by_user/:username', function(req, res){
 // Create New offer
 router.post('/profile', function(req, res){
   
-  var date_now = new Date();
-
-  var day = date_now.getDate();
-  var month = date_now.getMonth()+1; //January is 0!
-  var year = date_now.getFullYear();
-  var hours = date_now.getHours();
-  var minutes = date_now.getMinutes();
-
+  
   var sum_time = '';
 
-  month = less_than_ten(month);
-  day = less_than_ten(day);
-  hours = less_than_ten(hours);
-  minutes = less_than_ten(minutes);
-
-  var date = day+'/'+month+'/'+year;
-  var time = hours+':'+minutes;
-
+  
   var username = req.body.username;
+
+  var date = getDateString('slash');
+  var time = getTimeString();
 
 
   Log.find(function(err, docs) {
@@ -713,24 +639,18 @@ router.post('/profile', function(req, res){
       if(docs[0].date == date && docs[0].username == username && docs[0].status == 'started') {
         logsSize = 1;
 
-        first_t = docs[0].time_start.split(':');
-        first_t = Number(first_t[0]) * 60 + Number(first_t[1]);
-
-        second_t = time.split(':');
-        second_t = Number(second_t[0]) * 60 + Number(second_t[1]);
-        
-        sum_time = second_t - first_t;
+        sum_time = convertMinutes(docs[0].time_start) - convertMinutes(time);
 
         if(sum_time>=60) {
           sum_hours = Math.floor(sum_time/60);
           sum_minutes = sum_time%60;
 
-          sum_hours = less_than_ten(sum_hours);
-          sum_minutes = less_than_ten(sum_minutes);
+          sum_hours = checkLenght(sum_hours);
+          sum_minutes = checkLenght(sum_minutes);
           
           sum_time = sum_hours+':'+sum_minutes;
         } else {
-          sum_time = less_than_ten(sum_time);
+          sum_time = checkLenght(sum_time);
           sum_time = '00:'+sum_time;  
         }
       } else {
@@ -747,24 +667,18 @@ router.post('/profile', function(req, res){
         if(docs[i].date == date && docs[i].username == username && docs[i].status == 'started') {
           logsSize++;
 
-          first_t = docs[i].time_start.split(':');
-          first_t = Number(first_t[0]) * 60 + Number(first_t[1]);
-
-          second_t = time.split(':');
-          second_t = Number(second_t[0]) * 60 + Number(second_t[1]);
-          
-          sum_time = second_t - first_t;
+          sum_time = convertMinutes(docs[0].time_start) - convertMinutes(time);
 
           if(sum_time>=60) {
             sum_hours = Math.floor(sum_time/60);
             sum_minutes = sum_time%60;
             
-            sum_hours = less_than_ten(sum_hours);
-            sum_minutes = less_than_ten(sum_minutes);
+            sum_hours = checkLenght(sum_hours);
+            sum_minutes = checkLenght(sum_minutes);
 
             sum_time = sum_hours+':'+sum_minutes;
           } else {
-            sum_time = less_than_ten(sum_time);
+            sum_time = checkLenght(sum_time);
             sum_time = '00:'+sum_time;  
           }
         } else {
@@ -842,13 +756,13 @@ router.post('/profile', function(req, res){
       }
 
 
-      req.flash('success_msg', 'Your new log added. Now you can work.');
+      req.flash('success_msg', lang['log_added']);
       res.redirect('/users/profile/my_logs');
 
     
     } else {
 
-      req.flash('success_msg', 'Your limit of logs is over.');
+      req.flash('success_msg', lang['logs_limit']);
       res.redirect('/users/profile');
     
     }
@@ -866,30 +780,41 @@ router.post('/register', function(req, res){
   var password2 = req.body.password2;
   
   // Validation
-  req.checkBody('username', 'Username is required').notEmpty();
-  req.checkBody('password', 'Password is required').notEmpty();
-  req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+  req.checkBody('username', lang['un_req']).notEmpty();
+  req.checkBody('password', lang['pass_req']).notEmpty();
+  req.checkBody('password2', lang['pass_d_match']).equals(req.body.password);
   
   var errors = req.validationErrors();
 
   if(errors){
-    res.render('register', {
-      errors: errors 
-    });
+
+    if(errors) {
+      res.render('register', {
+        errors: errors 
+      });
+    }
+
   } else {
-    var newUser = new User({
-      username: username,
-      status: status,
-      password: password
-    });
 
-    User.createUser(newUser, function(err, user){
-      if(err) throw err;
-      console.log(user);
-    });
+    if(isUserNameExist(username)) {
+      res.render('register', {
+        error_username: lang['user_exist']
+      });
+    } else {
+      var newUser = new User({
+        username: username,
+        status: status,
+        password: password
+      });
 
-    req.flash('success_msg', 'You are registered and can now login');
-    res.redirect('/users/login');
+      User.createUser(newUser, function(err, user){
+        if(err) throw err;
+        console.log(user);
+      });
+
+      req.flash('success_msg', lang['registered']);
+      res.redirect('/users/login');
+    }
   }
 
 });
@@ -900,14 +825,14 @@ passport.use(new LocalStrategy(
     User.getUserByUsername(username, function(err, user){
       if(err) throw err;
       if(!user){
-        return done(null, false, { message: 'Unknown User' });
+        return done(null, false, { message: lang['user_unknown'] });
       }
       User.comparePassword(password, user.password, function(err, isMatch){
         if(err) throw err;
         if(isMatch){
           return done(null, user);
         } else {
-          return done(null, false, { message: 'Invalid password' });
+          return done(null, false, { message: lang['inv_pass'] });
         }
       });
     });
@@ -933,10 +858,82 @@ router.post('/login',
 router.get('/logout', function(req, res){
   req.logout();
 
-  req.flash('success_msg', 'You are logged out');
+  req.flash('success_msg', lang['logged_out']);
 
   res.redirect('/users/login');
 });
 
+
+function closeAllLogs() {
+  Log.find(function(err, docs) {
+    var logChunks = [];
+    var chunkSize = 1;
+
+    var option = {
+      status: 'started'
+    }
+
+    logChunks = getLogsByStatus(docs, 'started');
+
+    setLogsByStatus(logChunks, option);
+
+  });
+}
+
+function startBackup() {
+
+  function createBackup(database) {
+    var date_now = new Date();
+    var day = date_now.getDate();
+    var month = date_now.getMonth()+1;
+    var year = date_now.getFullYear();
+    var date = day+'_'+month+'_'+year;
+
+    var dbname = 'admin';
+    var dbpass = 'admin';
+    var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
+    
+    backup({
+      uri: mongodbUrl,  
+      root: 'backup/'+date,
+      parser: 'json',
+      callback: function(err) {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log('Utworzono backup bazy danych');
+        }
+      }
+    });
+   
+  }
+   
+  Log.find(function(err, docs){
+    var logChunks = [];
+    var chunkSize = 1;
+
+    logChunks = getLogsByStatus(docs, 'overed');
+    createBackup(logChunks);
+  });
+}
+
+
+var time = '00 30 23 * * 1-5';
+
+var job = new cronJob({
+  cronTime: time,
+  onTick: function() {
+    // Runs in jobs days
+    // at exactly 23:30:00.
+    closeAllLogs();
+    
+    setTimeout(function(){
+      startBackup();
+    }, 2000);
+  },
+  start: false
+});
+
+job.start();
 
 module.exports = router;
