@@ -21,6 +21,7 @@
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "ipware": "^1.0.0",
     "mongodb": "*",
     "mongodb-backup": "^1.6.9",
     "mongoose": "*",
