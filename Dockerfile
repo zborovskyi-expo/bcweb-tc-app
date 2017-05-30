@@ -22,6 +22,6 @@ RUN git clone https://github.com/zborovskyi-expo/bcweb-tc-app
 RUN cd bcweb-tc-app
 RUN npm install
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/bcweb-tc-app
 EXPOSE 8080
 CMD [ "npm", "start" ]
