@@ -108,7 +108,7 @@ function getSumTime(time_start, time_over) {
     sum_time = checkLenght(sum_time);
     sum_time = '00:'+sum_time;  
   }
-  
+
   return sum_time;
 }
 
@@ -889,11 +889,14 @@ function startBackup() {
     var dbname = 'admin';
     var dbpass = 'admin';
     var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
+    var backup_root = 'backup';
+    var backup_name = 'backup_'+date;
     
     backup({
       uri: mongodbUrl,  
-      root: 'backup/'+date,
+      root: backup_root,
       parser: 'json',
+      tar: backup_name+'.tar',
       callback: function(err) {
         if (err) {
           console.error(err);
@@ -913,6 +916,8 @@ function startBackup() {
     createBackup(logChunks);
   });
 }
+
+//startBackup();
 
 
 var time = '00 30 23 * * 1-5';
