@@ -104,35 +104,38 @@ app.use(function(req, res, next){
   next();
 });
 
-var os = require('os');
-var route = require('default-network');
-route.collect(function(error, data) {
-  names = Object.keys(data);
-  console.log(data);
-  console.log(data['Ethernet'][0].address);
-  console.log(os.networkInterfaces()[names[0]]);
-  console.log(os.networkInterfaces()[names[1]]);
-  console.log(os.networkInterfaces()[names[2]]);
+var getIP = require('ipware')().get_ip;
+
+app.use(function(req, res, next) {
+  var ipInfo = getIP(req);
+  console.log(ipInfo.clientIp);
+  next();
 });
 
+var satelize = require('satelize');
+var ExternalIP = "80.55.43.241";
+
+var latitude = 52.2333;
+var longitude = 21.0167;
+
+satelize.satelize({ip: ExternalIP}, function(err, geoData) {
+
+  if(geoData['latitude'] == latitude && geoData['longitude'] == longitude) {
+    console.log('hello');
+  }
+});
 
 network.get_active_interface(function(err, obj) {
-  //console.log(err);
-  //console.log(obj);
-  //console.log(obj.gateway_ip);
 
   debug_mode = true;
+  app.use('/', routes);
   if(!debug_mode) {
     if(obj.gateway_ip == gateway_ip) {
-      app.use('/', routes);
       app.use('/users', users);
       app.use('/logs', logs);
       app.use('/settings', settings);
-    } else {
-      app.use('/', routes);
     }
   } else {
-    app.use('/', routes);
     app.use('/users', users);
     app.use('/logs', logs);
     app.use('/settings', settings);
