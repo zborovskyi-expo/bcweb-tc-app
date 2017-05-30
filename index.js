@@ -13,7 +13,7 @@ var mongoose = require('mongoose');
 var network = require('network');
 var lang = require('./public/js/lang.js').lang;
 
-var debug_mode = true;
+var debug_mode = false;
 
 var gateway_ip = '192.168.20.1';
 
