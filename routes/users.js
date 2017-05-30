@@ -108,7 +108,7 @@ function getSumTime(time_start, time_over) {
     sum_time = checkLenght(sum_time);
     sum_time = '00:'+sum_time;  
   }
-
+  
   return sum_time;
 }
 
@@ -372,6 +372,22 @@ function getDateString(option) {
   return date;
 }
 
+function getMyLastLogTime(docs, username) {
+  var chunkSize = 1;
+
+  var date = getDateString('slash');
+
+  for (var i = 0; i < docs.length; i += chunkSize) {
+    if(docs[i].username == username) {
+      if(docs[i].date == date) {
+        if(docs[i].status == 'started') {
+          return docs[i].time_start;
+        }
+      }
+    }
+  }
+}
+
 function getMyLastLog(docs, username) {
   var chunkSize = 1;
 
@@ -473,6 +489,13 @@ router.get('/profile', function(req, res){
       var logChunks = [];
       var userChunks = [];
       var chunkSize = 1;
+      var time_start = getMyLastLogTime(docs, local_username);
+      
+      if(time_start) {
+        var time_now = getSumTime(time_start, getTimeString());
+      } else {
+        var time_now = '';
+      }
 
       var button = getMyLastLog(docs, local_username);
       var title = '';
@@ -496,7 +519,7 @@ router.get('/profile', function(req, res){
       User.find(function(err, docs) {
         userChunks = getUsers(docs);
         
-        res.render('profile', { title: lang['profile'], desc: lang['wc_profile'], users: userChunks, logs: logChunks, button_status: button, button_title: title});
+        res.render('profile', { title: lang['profile'], desc: lang['wc_profile'], users: userChunks, logs: logChunks, button_status: button, button_title: title, time_now: time_now});
       });
 
     });
@@ -616,13 +639,11 @@ router.get('/profile/logs_by_user/:username', function(req, res){
   }
 });
 
-// Create New offer
+// Create New log
 router.post('/profile', function(req, res){
-  
-  
+    
   var sum_time = '';
 
-  
   var username = req.body.username;
 
   var date = getDateString('slash');
@@ -639,20 +660,8 @@ router.post('/profile', function(req, res){
       if(docs[0].date == date && docs[0].username == username && docs[0].status == 'started') {
         logsSize = 1;
 
-        sum_time = convertMinutes(docs[0].time_start) - convertMinutes(time);
+        sum_time = getSumTime(docs[0].time_start, time);
 
-        if(sum_time>=60) {
-          sum_hours = Math.floor(sum_time/60);
-          sum_minutes = sum_time%60;
-
-          sum_hours = checkLenght(sum_hours);
-          sum_minutes = checkLenght(sum_minutes);
-          
-          sum_time = sum_hours+':'+sum_minutes;
-        } else {
-          sum_time = checkLenght(sum_time);
-          sum_time = '00:'+sum_time;  
-        }
       } else {
         logsSize = 0;
 
@@ -667,20 +676,8 @@ router.post('/profile', function(req, res){
         if(docs[i].date == date && docs[i].username == username && docs[i].status == 'started') {
           logsSize++;
 
-          sum_time = convertMinutes(docs[0].time_start) - convertMinutes(time);
+          sum_time = getSumTime(docs[i].time_start, time);
 
-          if(sum_time>=60) {
-            sum_hours = Math.floor(sum_time/60);
-            sum_minutes = sum_time%60;
-            
-            sum_hours = checkLenght(sum_hours);
-            sum_minutes = checkLenght(sum_minutes);
-
-            sum_time = sum_hours+':'+sum_minutes;
-          } else {
-            sum_time = checkLenght(sum_time);
-            sum_time = '00:'+sum_time;  
-          }
         } else {
           if(docs[i].date == date && docs[i].username == username && docs[i].status == 'overed') {
             logsSize = 2;

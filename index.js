@@ -61,7 +61,6 @@ app.use(cookieParser());
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // Express Session
 app.use(session({
@@ -104,7 +103,6 @@ app.use(function(req, res, next){
   res.locals.user = req.user || null;
   next();
 });
-
 
 network.get_active_interface(function(err, obj) {
 
