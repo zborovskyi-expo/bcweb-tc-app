@@ -5,6 +5,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var lang = require('../public/js/lang.js').lang;
 var backup = require('mongodb-backup');
 var cronJob = require('cron').CronJob;
+var sendmail = require('sendmail')();
 
 var User = require('../models/user');
 var Log = require('../models/log');
@@ -899,9 +900,26 @@ function startBackup() {
       tar: backup_name+'.tar',
       callback: function(err) {
         if (err) {
-          console.error(err);
+          //console.error(err);
         } else {
           console.log('Utworzono backup bazy danych');
+
+          sendmail({
+            from: 'bohdan.zborovskyi@gmail.com',
+            to: 'bohdan.zborovskyi@gmail.com',
+            subject: 'Backup bazy danych',
+            html: 'Backup bazy danych '+date,
+            attachments: [
+              {   // utf-8 string as an attachment
+                filename: backup_name+'.tar',
+                path: backup_root+'/'+backup_name+'.tar',
+                contentType: 'application/x-compressed'
+              },
+            ]
+          }, function(err, reply) {
+            //console.log(err);
+          });
+
         }
       }
     });
@@ -917,11 +935,8 @@ function startBackup() {
   });
 }
 
-//startBackup();
-
-
 var time = '00 30 23 * * 1-5';
-time = '00 10 16 * * 1-5'
+time = '00 45 17 * * 1-5';
 var job = new cronJob({
   cronTime: time,
   onTick: function() {

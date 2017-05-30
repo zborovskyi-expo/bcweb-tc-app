@@ -29,6 +29,7 @@
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*",
+    "sendmail": "^1.1.1",
     "socket.io": "^1.7.3"
   }
 }
