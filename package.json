@@ -15,6 +15,7 @@
     "connect-flash": "*",
     "cookie-parser": "^1.4.1",
     "cron": "^1.2.1",
+    "default-network": "^0.2.0",
     "express": "*",
     "express-handlebars": "*",
     "express-messages": "*",

@@ -104,11 +104,14 @@ app.use(function(req, res, next){
   next();
 });
 
-var requestIp = require('request-ip');
-
-app.use(function(req, res, next) {
-    console.log(requestIp.getClientIp(req)); // on localhost > 127.0.0.1
-    next();
+var os = require('os');
+var route = require('default-network');
+route.collect(function(error, data) {
+  names = Object.keys(data);
+  console.log(data['Ethernet'][0].address);
+  console.log(os.networkInterfaces()[names[0]]);
+  console.log(os.networkInterfaces()[names[1]]);
+  console.log(os.networkInterfaces()[names[2]]);
 });
 
 
