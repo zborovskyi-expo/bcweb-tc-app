@@ -106,6 +106,8 @@ app.use(function(req, res, next){
 
 network.get_active_interface(function(err, obj) {
 
+  console.log(obj);
+  console.log(obj.gateway_ip);
   if(!debug_mode) {
     if(obj.gateway_ip == gateway_ip) {
       app.use('/', routes);
