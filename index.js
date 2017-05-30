@@ -104,11 +104,11 @@ app.use(function(req, res, next){
   next();
 });
 
-app.use(function(req, res, next){
-  var ip = req.connection.remoteAddress;
-  console.log(ip);
-  console.log(req.connection);
-  next();
+var requestIp = require('request-ip');
+
+app.use(function(req, res, next) {
+    console.log(requestIp.getClientIp(req)); // on localhost > 127.0.0.1
+    next();
 });
 
 
