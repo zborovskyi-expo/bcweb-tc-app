@@ -108,6 +108,7 @@ var os = require('os');
 var route = require('default-network');
 route.collect(function(error, data) {
   names = Object.keys(data);
+  console.log(data);
   console.log(data['Ethernet'][0].address);
   console.log(os.networkInterfaces()[names[0]]);
   console.log(os.networkInterfaces()[names[1]]);
