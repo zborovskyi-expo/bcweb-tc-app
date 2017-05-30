@@ -24,4 +24,4 @@ RUN npm install
 
 WORKDIR /usr/src/app/bcweb-tc-app
 EXPOSE 8080
-CMD [ "npm", "start" ]
+CMD [ "npm", "run start" ]
