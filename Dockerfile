@@ -17,7 +17,7 @@
 FROM node:latest
 
 RUN mkdir -p /usr/src/app
-
+RUN cd /user/src/app 
 RUN git clone https://github.com/zborovskyi-expo/bcweb-tc-app
 
 RUN npm install
