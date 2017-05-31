@@ -896,6 +896,8 @@ function startBackup() {
     var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
     var backup_root = 'backup';
     var backup_name = 'backup_'+date;
+    var email_from = 'bohdan.zborovskyi@gmail.com';
+    var email_to = 'bcwebapp.backup@gmail.com';
     
     backup({
       uri: mongodbUrl,  
@@ -909,8 +911,8 @@ function startBackup() {
           console.log('Utworzono backup bazy danych');
 
           sendmail({
-            from: 'bohdan.zborovskyi@gmail.com',
-            to: 'bohdan.zborovskyi@gmail.com',
+            from: email_from,
+            to: email_to,
             subject: 'Backup bazy danych',
             html: 'Backup bazy danych '+date,
             attachments: [
