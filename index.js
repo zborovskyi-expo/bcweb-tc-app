@@ -104,31 +104,30 @@ app.use(function(req, res, next){
   next();
 });
 
-/*var getIP = require('ipware')().get_ip;
-var satelize = require('satelize');
+
+var const_ip = '80.55.43.241';
+var getIP = require('ipware')().get_ip;
 
 app.use(function(req, res, next) {
   var ipInfo = getIP(req);
-  console.log(ipInfo.clientIp);
-  next();
   
-  var ExternalIP = ipInfo.clientIp;
+  app.use('/', routes);
+  debug_mode = true;
 
-  var latitude = 52.2333;
-  var longitude = 21.0167;
-
-  satelize.satelize({ip: ExternalIP}, function(err, geoData) {
-
-    if(geoData['latitude'] == latitude && geoData['longitude'] == longitude) {
-      debug_mode = true;*/
-      app.use('/', routes);
+  if(debug_mode == true) {
+    app.use('/users', users);
+    app.use('/logs', logs);
+    app.use('/settings', settings);
+  } else {
+    if(ipInfo.clientIp == const_ip) {
       app.use('/users', users);
       app.use('/logs', logs);
       app.use('/settings', settings);
-/*  }
-  });
-});*/
-
+    }
+  }
+  
+  next();
+});
 
 
 // Set Port
