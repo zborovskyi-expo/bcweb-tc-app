@@ -286,11 +286,21 @@ ul.alert-dropdown {
 }
 
 .spec-button {
-  min-width: 300px;
+  min-width: 250px;
   height: 90px;
   font-size: 2em;
   margin-top: 50px;
   padding: 20px 40px;
+}
+
+@media screen and (max-width: 420px) {
+	.spec-button {
+    height: 70px;
+    max-width: 100%;
+    font-size: 1.25em;
+    margin-top: 50px;
+    padding: 20px;
+  }
 }
 
 
