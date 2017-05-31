@@ -104,43 +104,32 @@ app.use(function(req, res, next){
   next();
 });
 
-var getIP = require('ipware')().get_ip;
+/*var getIP = require('ipware')().get_ip;
+var satelize = require('satelize');
 
 app.use(function(req, res, next) {
   var ipInfo = getIP(req);
   console.log(ipInfo.clientIp);
   next();
-});
+  
+  var ExternalIP = ipInfo.clientIp;
 
-var satelize = require('satelize');
-var ExternalIP = "80.55.43.241";
+  var latitude = 52.2333;
+  var longitude = 21.0167;
 
-var latitude = 52.2333;
-var longitude = 21.0167;
+  satelize.satelize({ip: ExternalIP}, function(err, geoData) {
 
-satelize.satelize({ip: ExternalIP}, function(err, geoData) {
-
-  if(geoData['latitude'] == latitude && geoData['longitude'] == longitude) {
-    console.log('hello');
-  }
-});
-
-network.get_active_interface(function(err, obj) {
-
-  debug_mode = true;
-  app.use('/', routes);
-  if(!debug_mode) {
-    if(obj.gateway_ip == gateway_ip) {
+    if(geoData['latitude'] == latitude && geoData['longitude'] == longitude) {
+      debug_mode = true;*/
+      app.use('/', routes);
       app.use('/users', users);
       app.use('/logs', logs);
       app.use('/settings', settings);
-    }
-  } else {
-    app.use('/users', users);
-    app.use('/logs', logs);
-    app.use('/settings', settings);
-  }
-});
+/*  }
+  });
+});*/
+
+
 
 // Set Port
 app.set('port', (process.env.PORT || 8080));
