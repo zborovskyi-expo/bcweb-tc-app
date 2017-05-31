@@ -27,6 +27,18 @@ function getUsers(docs) {
   return userChunks;
 }
 
+function getUsersByUsername(docs, username) {
+  var chunkSize = 1;
+  var userChunks = [];
+  for (var i = 0; i < docs.length; i += chunkSize) {
+    if(username == docs[i].username) {
+      userChunks.push(docs[i].username);
+    }
+  } 
+
+  return userChunks;
+}
+
 function getLogsByStatus(docs, status) {
   var chunkSize = 1;
   var logChunks = [];
@@ -51,17 +63,6 @@ function getTimeString() {
   return time;
 }
 
-
-function isUserNameExist(username) {
-  var query = {username: username};
-  
-  var callback = function callback(err, user) {
-    if(err) console.log(err);
-    if(user.username) return true;
-  }
-
-  return User.findOne(query, callback);
-}
 
 function setLogsByStatus(docs, option) {
   var chunkSize = 1;
@@ -786,33 +787,36 @@ router.post('/register', function(req, res){
 
   if(errors){
 
-    if(errors) {
-      res.render('register', {
-        errors: errors 
-      });
-    }
+    res.render('register', {
+      errors: errors 
+    });
 
   } else {
 
-    if(isUserNameExist(username)) {
-      res.render('register', {
-        error_username: lang['user_exist']
-      });
-    } else {
-      var newUser = new User({
-        username: username,
-        status: status,
-        password: password
-      });
 
-      User.createUser(newUser, function(err, user){
-        if(err) throw err;
-        console.log(user);
-      });
+    User.find(function(err, docs) {
+      var userChunks = getUsersByUsername(docs, username);
 
-      req.flash('success_msg', lang['registered']);
-      res.redirect('/users/login');
-    }
+      if(userChunks.length!=0) {
+        res.render('register', {
+          error_username: lang['user_exist']
+        });
+      } else {
+        var newUser = new User({
+          username: username,
+          status: status,
+          password: password
+        });
+
+        User.createUser(newUser, function(err, user){
+          if(err) throw err;
+          console.log(user);
+        });
+
+        req.flash('success_msg', lang['registered']);
+        res.redirect('/users/login');
+      }
+    });
   }
 
 });
