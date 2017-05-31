@@ -319,3 +319,8 @@ ul.alert-dropdown {
   font-size: 20px;
   z-index: 1000;
 }
+
+.active a {
+  color: #fff !important;
+  background-color: #000 !important;
+}

@@ -95,15 +95,19 @@ app.use(expressValidator({
 // Connect Flash
 app.use(flash());
 
+var res_url = '';
 // Global Vars
 app.use(function(req, res, next){
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
   res.locals.user = req.user || null;
+  if(req.url != '/css/bootstrap.min.css.map') {
+    res_url = req.url;
+    res.locals.res_url = res_url;
+  }
   next();
 });
-
 
 var const_ip = '80.55.43.241';
 var getIP = require('ipware')().get_ip;

@@ -36,4 +36,15 @@ $(window).load(function(){
     document.getElementById("clock_content").innerHTML = d;
   }
 
+  function checkNavi() {
+    var res_url = $('#res_url').text();
+    $('#left_navi li').each(function(){
+      if($(this).find('a').attr('href') == res_url) {
+        $(this).addClass('active');
+      }
+    });
+  }
+
+  checkNavi();
+
 });

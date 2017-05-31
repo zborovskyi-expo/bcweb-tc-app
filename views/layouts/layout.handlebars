@@ -70,15 +70,16 @@
 							</li>
 						</ul>
 						<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-						<div class="collapse navbar-collapse navbar-ex1-collapse">
+						<div class="collapse navbar-collapse navbar-ex1-collapse" id="left_navi">
+							<div class="hidden" id="res_url">{{res_url}}</div>
 							<ul class="nav navbar-nav side-nav">
 								{{#unless user }}
 									<li class="active">
-										<a href="/"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+										<a href="/"><i class="fa fa-fw fa-dashboard"></i> Dashboard </a>
 									</li>
 								{{/unless}}
 								{{#if user}}
-									<li class="active">
+									<li>
 										<a href="/users/profile"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
 									</li>
 									<li>
