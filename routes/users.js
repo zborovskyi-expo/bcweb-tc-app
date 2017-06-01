@@ -942,13 +942,13 @@ function startBackup() {
 }
 
 var time = '00 30 23 * * 1-5';
-time = '00 25 10 * * 1-5';
+//time = '00 25 10 * * 1-5';
 var job = new cronJob({
   cronTime: time,
   onTick: function() {
     // Runs in jobs days
     // at exactly 23:30:00.
-    //closeAllLogs();
+    closeAllLogs();
     
     setTimeout(function(){
       startBackup();
