@@ -866,7 +866,7 @@ router.get('/logout', function(req, res){
 });
 
 
-function closeAllLogs() {
+/*function closeAllLogs() {
   Log.find(function(err, docs) {
     var logChunks = [];
     var chunkSize = 1;
@@ -957,6 +957,6 @@ var job = new cronJob({
   start: false
 });
 
-job.start();
+job.start();*/
 
 module.exports = router;
