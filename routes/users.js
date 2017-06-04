@@ -157,19 +157,6 @@ function getTimeOfMonth(docs, month, username) {
 
 }
 
-function setDateAdvancedByUsername(docs, username) {
-  
-  var chunkSize = 1;
-
-  for (var i = 0; i < docs.length; i += chunkSize) {
-    if(docs[i].username == username) {
-      var dateNow = docs[i].date.split('/');
-      docs[i].day = Number(dateNow[0]);
-      docs[i].month = Number(dateNow[1]);
-      docs[i].year = Number(dateNow[2]);
-    }
-  }
-}
 
 function setDateAdvanced(docs) {
   
@@ -263,85 +250,18 @@ function setDateBreak(docs, logChunks) {
   
 }
 
-function setDateBreakByUsername(docs, logChunks, username) {
+function getPersonalLogs(docs, username) {
+
   var chunkSize = 1;
+  var logChunks = [];
 
   for (var i = 0; i < docs.length; i += chunkSize) {
     if(docs[i].username == username) {
-      var monthNow = docs[i].month;
-      
-      if(i!=0) {
-        var monthBefore = docs[i-1].month;
-      } else {
-        var monthBefore = monthNow;
-      }
-      
-      if(i==docs.length-1) {
-        var monthAfter = monthNow;
-      } else {
-        if(i<docs.length-1) {
-          var monthAfter = docs[i+1].month;
-        }
-      }
-
-      docs[i].monthName = monthNames[monthNow];
-
-      var breakBefore = true;
-      var breakAfter = true;
-
-      if(i>0) {
-
-        if(i!=docs.length) {
-          if(monthNow != monthAfter) {
-            breakAfter = true;
-          } else {
-            breakAfter = false;
-          }
-        } else {
-          breakAfter = true;
-        }
-
-        if(monthNow != monthBefore) {
-          breakBefore = true;
-        } else {
-          breakBefore = false;
-        }
-
-        if(i == docs.length-1) {
-          breakAfter = true;
-        }
-
-      } else {
-        breakBefore = true;
-
-        if(monthNow != monthAfter) {
-          breakAfter = true;
-        } else {
-          breakAfter = false;
-        }
-
-      }
-
-      if(breakBefore) {
-        docs[i].beforeBreak = true;
-      } else {
-        docs[i].beforeBreak = false;
-      }
-
-      
-      if(breakAfter) {
-        docs[i].afterBreak = true;
-      } else {
-        docs[i].afterBreak = false;
-      }
-      
-      if(breakAfter) {
-        docs[i].all_time = getTimeOfMonth(docs, docs[i].month, username);      
-      }
-
-      logChunks.push(docs[i]);
+      logChunks.push(docs[i]); 
     }
   }
+
+  return logChunks;
 }
 
 function getMyLogs(docs, username) {
@@ -352,9 +272,11 @@ function getMyLogs(docs, username) {
     return new Date(a.date).getTime() - new Date(b.date).getTime() 
   });
 
-  setDateAdvancedByUsername(docs, username);
+  docs = getPersonalLogs(docs, username);
+  
+  setDateAdvanced(docs);
 
-  setDateBreakByUsername(docs, logChunks, username);
+  setDateBreak(docs, logChunks);
 
   return logChunks;
 }
@@ -431,9 +353,9 @@ function getLogsByName(docs, usename) {
     return new Date(a.date).getTime() - new Date(b.date).getTime() 
   });
 
-  setDateAdvancedByUsername(docs, username);
+  setDateAdvanced(docs);
 
-  setDateBreakByUsername(docs, logChunks, username);
+  setDateBreak(docs, logChunks);
 
   return logChunks;
 }
@@ -446,9 +368,9 @@ function getLogsByMonth(docs, username) {
     return new Date(a.date).getTime() - new Date(b.date).getTime() 
   });
 
-  setDateAdvancedByUsername(docs, username);
+  setDateAdvanced(docs);
   
-  setDateBreakByUsername(docs, logChunks);
+  setDateBreak(docs, logChunks);
   
   return logChunks;
 }
@@ -545,8 +467,6 @@ router.get('/profile/my_logs', function(req, res){
       var chunkSize = 1;
 
       logChunks = getMyLogs(docs, local_username);
-
-      //logChunks = getLogsByMonth(docs, local_username);
 
       User.find(function(err, docs) {
         
@@ -866,7 +786,7 @@ router.get('/logout', function(req, res){
 });
 
 
-/*function closeAllLogs() {
+function closeAllLogs() {
   Log.find(function(err, docs) {
     var logChunks = [];
     var chunkSize = 1;
@@ -878,7 +798,6 @@ router.get('/logout', function(req, res){
     logChunks = getLogsByStatus(docs, 'started');
 
     setLogsByStatus(logChunks, option);
-
   });
 }
 
@@ -898,6 +817,7 @@ function startBackup() {
     var backup_name = 'backup_'+date;
     var email_from = 'bcwebapp.backup@gmail.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
+    email_to = 'bcwebapp.backup@gmail.com';
     
     backup({
       uri: mongodbUrl,  
@@ -942,7 +862,7 @@ function startBackup() {
 }
 
 var time = '00 30 23 * * 1-5';
-//time = '00 25 10 * * 1-5';
+//time = '*/10 * * * * *';
 var job = new cronJob({
   cronTime: time,
   onTick: function() {
@@ -950,13 +870,11 @@ var job = new cronJob({
     // at exactly 23:30:00.
     closeAllLogs();
     
-    setTimeout(function(){
-      startBackup();
-    }, 2000);
+    startBackup();
   },
-  start: false
+  start: true
 });
 
-job.start();*/
+job.start();
 
 module.exports = router;
