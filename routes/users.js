@@ -573,117 +573,93 @@ router.post('/profile', function(req, res){
 
 
   Log.find(function(err, docs) {
-    var status = '';
+    var status = 'started';
     var chunkSize = 1;
     var logsSize = 0;
-    var sub_time = '';    
+    var sub_time = '';
 
-    if(docs.length==1) {
-      if(docs[0].date == date && docs[0].username == username && docs[0].status == 'started') {
-        logsSize = 1;
-
-        sum_time = getSumTime(docs[0].time_start, time);
-
+    function checkLogStatus(doc) {
+      if(doc.date == date && doc.username == username && doc.status == 'started') {
+        status = 'overed';
+        sum_time = getSumTime(doc.time_start, time);
       } else {
         logsSize = 0;
 
-        if(docs[0].date == date && docs[0].username == username && docs[0].status == 'overed') {
-          logsSize = 2;
+        if(doc.date == date && doc.username == username && doc.status == 'overed') {
+          status = 'error';
         } 
       }
     }
 
+    docs = getPersonalLogs(docs, username);
+
+    if(docs.length==1) {
+      checkLogStatus(docs[0]);
+    }
+
     if(docs.length>1) {
       for (var i = 0; i < docs.length; i += chunkSize) {
-        if(docs[i].date == date && docs[i].username == username && docs[i].status == 'started') {
-          logsSize++;
-
-          sum_time = getSumTime(docs[i].time_start, time);
-
-        } else {
-          if(docs[i].date == date && docs[i].username == username && docs[i].status == 'overed') {
-            logsSize = 2;
-          } 
-        }
+        checkLogStatus(docs[i]);
       }
     }
-    
-    if(logsSize == 0) {
-      status = 'started';
-    }
 
-    if(logsSize == 1) {
-      status = 'overed';
-    }
+    if(status == 'started') {
 
-    if(logsSize > 1) {
-      status = 'error';
-    }
+      var newLog = new Log({
+        date: date,
+        time_start: time,
+        time_over: '',
+        status: status,
+        username: username,
+        sum_time: ''
+      });
 
-    if(status != 'error') {
-
-      if(status == '') {
-        status = 'started';
-      }
-
-      if(status == 'started') {
-        var newLog = new Log({
-          date: date,
-          time_start: time,
-          time_over: '',
-          status: status,
-          username: username,
-          sum_time: ''
-        });
-
-        Log.createLog(newLog, function(err, log){
-          if(err) throw err;
-          console.log(log);
-        });
-
-
-      }
-
-      if(status == 'overed') {
-
-        Log.find(function(err, docs) {
-
-          if(err) throw err;
-          
-          if(docs.length==1) {
-            if(docs[0].date == date && docs[0].username == username) {
-              docs[0].time_over = time;
-              docs[0].status = status;
-              docs[0].sum_time = sum_time;
-              docs[0].save();
-            }
-          }
-
-          if(docs.length>1) {
-            for (var i = 0; i < docs.length; i += chunkSize) {
-              if(docs[i].date == date && docs[i].username == username) {
-                docs[i].time_over = time;
-                docs[i].status = status;
-                docs[i].sum_time = sum_time;
-                docs[i].save();   
-              }
-            }
-          }
-
-        });
-
-      }
-
+      Log.createLog(newLog, function(err, log){
+        if(err) throw err;
+        console.log(log);
+      });
 
       req.flash('success_msg', lang['log_added']);
       res.redirect('/users/profile/my_logs');
 
-    
-    } else {
+    }
 
-      req.flash('success_msg', lang['logs_limit']);
-      res.redirect('/users/profile');
+    if(status == 'overed') {
+
+      Log.find(function(err, docs) {
+
+        if(err) throw err;
+        
+        if(docs.length==1) {
+          if(docs[0].date == date && docs[0].username == username) {
+            docs[0].time_over = time;
+            docs[0].status = status;
+            docs[0].sum_time = sum_time;
+            docs[0].save();
+          }
+        }
+
+        if(docs.length>1) {
+          for (var i = 0; i < docs.length; i += chunkSize) {
+            if(docs[i].date == date && docs[i].username == username) {
+              docs[i].time_over = time;
+              docs[i].status = status;
+              docs[i].sum_time = sum_time;
+              docs[i].save();   
+            }
+          }
+        }
+
+      });
+
+      req.flash('success_msg', lang['log_finished']);
+      res.redirect('/users/profile/my_logs');
     
+    }
+
+    if(status == 'error') {
+      req.flash('error_msg', lang['logs_limit']);
+      res.redirect('/users/profile');
     }
   });
 
@@ -817,7 +793,7 @@ function startBackup() {
     var backup_name = 'backup_'+date;
     var email_from = 'bcwebapp.backup@gmail.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
-    email_to = 'bcwebapp.backup@gmail.com';
+    //email_to = 'bcwebapp.backup@gmail.com';
     
     backup({
       uri: mongodbUrl,  

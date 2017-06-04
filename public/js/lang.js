@@ -1,5 +1,6 @@
 var lang = {
   "log_added": "Dodano nowy zapis. Teraz możesz pracować.",
+  "log_finished": "Teraz praca jest skończona.",
   "logs_limit": "Twój limit zapisów się skończył.",
   "not_logged_in": "Nie jesteś zalogowany",
   "logged_in": "Jesteś zalogowany",

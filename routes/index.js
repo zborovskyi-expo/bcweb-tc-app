@@ -3,10 +3,10 @@ var router = express.Router();
 
 
 // Get Homepage
-router.get('/', function(req, res){
+router.get('/', ensureAuthenticated, function(req, res){
 
-  res.render('login');
-  
+  //res.render('login');
+  res.redirect('/users/profile');
 });
 
 function ensureAuthenticated(req, res, next){

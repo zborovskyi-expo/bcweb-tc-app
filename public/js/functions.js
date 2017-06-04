@@ -1,39 +1,95 @@
 $(window).load(function(){
 
+  function startTime() {
+    var time = convertToMinutes(getTimeNowString()) - convertToMinutes($('#clock_content').text());
+    time = convertToString(time);
+    return time;
+  }
+
   function checkLenght(text) {
     if (text < 10) text = '0' + text;
     return text;
   }
 
-  function convertMinutes(time) {
+  function convertToMinutes(time) {
     time = time.split(':');
     time = Number(time[0]) * 60 + Number(time[1]);
 
     return time;
   }
-  
-  function getTimeString(time) {
-    time = convertMinutes(time) + 1;
 
+  function convertToString(time) {
     var hours = Math.floor(time/60);
     var minutes = time%60;
 
     hours = checkLenght(hours);
     minutes = checkLenght(minutes);
-
+    
     time = hours+':'+minutes;
+    
+    return time;
+  }
+
+  function getTimeNowString() {
+    var date_now = new Date();
+
+    var hours = checkLenght(date_now.getHours());
+    var minutes = checkLenght(date_now.getMinutes());
+
+    var time = hours+':'+minutes;
 
     return time;
   }
 
-  var myVar = setInterval(function() {
-    myTimer();
-  }, 60000);
+  
+  function getTimeString(time) {
+
+    time = convertToMinutes(time);
+
+    time = convertToString(time);
+
+    return time;
+
+  }
+
+  function getSumTime(time_start, time_over) {
+    
+    time_start = convertToMinutes(time_start);
+    time_over = convertToMinutes(time_over);
+    
+    var sum_time = time_over - time_start;
+
+    if(sum_time>=60) {
+      sum_hours = Math.floor(sum_time/60);
+      sum_minutes = sum_time%60;
+      
+      sum_hours = checkLenght(sum_hours);
+      sum_minutes = checkLenght(sum_minutes);
+
+      sum_time = sum_hours+':'+sum_minutes;
+    } else {
+      sum_time = checkLenght(sum_time);
+      sum_time = '00:'+sum_time;
+    }
+
+    return sum_time;
+  }
+
+  if($("#clock_content").length) {
+    console.log('log');  
+    var myVar = setInterval(function() {
+      myTimer();
+    }, 1000);
+  }
+
 
   function myTimer() {
-    var time = $('#clock_content').text();
-    var d = getTimeString(time);
-    document.getElementById("clock_content").innerHTML = d;
+    var time_save = startTime();
+    var time_now = getTimeNowString();
+
+    if(time_save != time_now) {
+      document.getElementById("clock_content").innerHTML = getSumTime(time_save, time_now);
+    }
   }
 
   function checkNavi() {
