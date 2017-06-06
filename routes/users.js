@@ -465,6 +465,13 @@ router.get('/profile/my_logs', function(req, res){
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
+      var time_start = getMyLastLogTime(docs, local_username);
+
+      if(time_start) {
+        var time_now = getSumTime(time_start, getTimeString());
+      } else {
+        var time_now = '';
+      }
 
       logChunks = getMyLogs(docs, local_username);
 
@@ -472,7 +479,7 @@ router.get('/profile/my_logs', function(req, res){
         
         userChunks = getUsers(docs);
         
-        res.render('my_logs', { title: title, desc: desc, users: userChunks, logs: logChunks });
+        res.render('my_logs', { title: title, desc: desc, users: userChunks, logs: logChunks, time_now: time_now });
       });
 
     });
@@ -497,7 +504,7 @@ router.get('/profile/all_logs', function(req, res){
         
         userChunks = getUsers(docs);
         
-        res.render('my_logs', { title: title, users: userChunks, logs: logChunks });
+        res.render('all_logs', { title: title, users: userChunks, logs: logChunks });
 
       });
 
@@ -837,8 +844,8 @@ function startBackup() {
   });
 }
 
-var time = '00 30 23 * * 1-5';
-//time = '*/10 * * * * *';
+var time = '30 23 * * 1-5';
+//time = '39 21 * * 1-5';
 var job = new cronJob({
   cronTime: time,
   onTick: function() {
@@ -848,9 +855,11 @@ var job = new cronJob({
     
     startBackup();
   },
-  start: true
+  start: false,
+  timeZone: 'Europe/Warsaw'
 });
 
 job.start();
+
 
 module.exports = router;

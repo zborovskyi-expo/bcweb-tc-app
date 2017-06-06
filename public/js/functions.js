@@ -41,17 +41,6 @@ $(window).load(function(){
     return time;
   }
 
-  
-  function getTimeString(time) {
-
-    time = convertToMinutes(time);
-
-    time = convertToString(time);
-
-    return time;
-
-  }
-
   function getSumTime(time_start, time_over) {
     
     time_start = convertToMinutes(time_start);
@@ -76,7 +65,6 @@ $(window).load(function(){
   }
 
   if($("#clock_content").length) {
-    console.log('log');  
     var myVar = setInterval(function() {
       myTimer();
     }, 1000);
