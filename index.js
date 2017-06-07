@@ -10,7 +10,6 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
-var network = require('network');
 var lang = require('./public/js/lang.js').lang;
 
 var debug_mode = false;
