@@ -879,7 +879,7 @@ var job1 = new cronJob({
 job1.start();
 
 var job2 = new cronJob({
-  cronTime: '37 22 * * 1-5',
+  cronTime: '37 20 * * 1-5',
   onTick: function() {
     // Runs in jobs days
     // at exactly 23:30:00.
