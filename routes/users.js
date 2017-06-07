@@ -863,4 +863,35 @@ var job = new cronJob({
 job.start();
 
 
+var job1 = new cronJob({
+  cronTime: '35 22 * * 1-5',
+  onTick: function() {
+    // Runs in jobs days
+    // at exactly 23:30:00.
+    //closeAllLogs();
+    //startBackup();
+    console.log('START TIME 1');
+  },
+  start: false,
+  timeZone: 'Europe/Warsaw'
+});
+
+job1.start();
+
+var job2 = new cronJob({
+  cronTime: '37 22 * * 1-5',
+  onTick: function() {
+    // Runs in jobs days
+    // at exactly 23:30:00.
+    //closeAllLogs();
+    //startBackup();
+    console.log('START TIME 2');
+  },
+  start: false,
+  timeZone: 'Europe/Warsaw'
+});
+
+job2.start();
+
+
 module.exports = router;
