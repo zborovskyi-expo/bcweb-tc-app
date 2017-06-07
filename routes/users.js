@@ -800,7 +800,7 @@ function startBackup() {
     var backup_name = 'backup_'+date;
     var email_from = 'bcwebapp.backup@gmail.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
-    //email_to = 'bcwebapp.backup@gmail.com';
+    email_to = 'bcwebapp.backup@gmail.com';
     
     backup({
       uri: mongodbUrl,  
@@ -809,7 +809,8 @@ function startBackup() {
       tar: backup_name+'.tar',
       callback: function(err) {
         if (err) {
-          //console.error(err);
+          console.error("Error:");
+          console.error(err);
         } else {
           console.log('Utworzono backup bazy danych');
 
@@ -826,7 +827,8 @@ function startBackup() {
               },
             ]
           }, function(err, reply) {
-            //console.log(err);
+            console.error("Error:");
+            console.log(err);
           });
 
         }
@@ -845,21 +847,36 @@ function startBackup() {
 }
 
 var time = '30 23 * * 1-5';
-//time = '39 21 * * 1-5';
-var job = new cronJob({
-  cronTime: time,
+//time = '00 */2 21 * * 1-5';
+var job1 = new cronJob({
+  cronTime: 00 */2 21 * * 1-5,
   onTick: function() {
     // Runs in jobs days
     // at exactly 23:30:00.
     closeAllLogs();
-    
     startBackup();
+    console.log('hello');
   },
   start: false,
   timeZone: 'Europe/Warsaw'
 });
 
-job.start();
+job1.start();
+
+var job2 = new cronJob({
+  cronTime: time,
+  onTick: function() {
+    // Runs in jobs days
+    // at exactly 23:30:00.
+    closeAllLogs();
+    startBackup();
+    console.log('hello');
+  },
+  start: false,
+  timeZone: 'Europe/Warsaw'
+});
+
+job2.start();
 
 
 module.exports = router;
