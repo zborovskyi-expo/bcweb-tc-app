@@ -849,7 +849,7 @@ function startBackup() {
 var time = '30 23 * * 1-5';
 //time = '00 */2 21 * * 1-5';
 var job1 = new cronJob({
-  cronTime: 00 */2 21 * * 1-5,
+  cronTime: '00 */10 21 * * 1-5',
   onTick: function() {
     // Runs in jobs days
     // at exactly 23:30:00.
