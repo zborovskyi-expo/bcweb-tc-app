@@ -798,7 +798,7 @@ function startBackup() {
     var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
     var backup_root = 'backup';
     var backup_name = 'backup_'+date;
-    var email_from = 'bohdan.zborovskyi@gmail.com';
+    var email_from = 'bohdan.blabla@blabla.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
     //email_to = 'bcwebapp.backup@gmail.com';
     
