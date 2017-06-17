@@ -818,7 +818,7 @@ function startBackup() {
     var backup_name = 'backup_'+date;
     var email_from = 'bohdan.blabla@blabla.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
-    email_to = 'bcwebapp.backup@gmail.com';
+    //email_to = 'bcwebapp.backup@gmail.com';
     
     backup({
       uri: mongodbUrl,  
@@ -875,17 +875,12 @@ var job = new cronJob({
 
     var date = new Date();
     
-    if(date.getMinutes() == 42 && date.getHours() == 23 && (/*date.getDay() != 5 && */date.getDay() != 0) ) {
-      console.log('Day: '+date.getDay());
+    if(date.getMinutes() == 30 && date.getHours() == 23 && (date.getDay() != 6 && date.getDay() != 0) ) {
+      /*console.log('Day: '+date.getDay());
       console.log('Minutes: '+date.getMinutes());
-      console.log('Hours: '+date.getHours());
+      console.log('Hours: '+date.getHours());*/
       closeAllLogs();
       startBackup();
-    } else {
-      console.log('Day: '+date.getDay());
-      console.log('Minutes: '+date.getMinutes());
-      console.log('Hours: '+date.getHours());
-      console.log('Doesnt works');
     }
 
   },
