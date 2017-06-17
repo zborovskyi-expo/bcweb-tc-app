@@ -818,7 +818,7 @@ function startBackup() {
     var backup_name = 'backup_'+date;
     var email_from = 'bohdan.blabla@blabla.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
-    //email_to = 'bcwebapp.backup@gmail.com';
+    email_to = 'bcwebapp.backup@gmail.com';
     
     backup({
       uri: mongodbUrl,  
@@ -865,14 +865,24 @@ function startBackup() {
 }
 
 var time = '30 23 * * 1-5';
+time = '0 * * * * *';
 
 var job = new cronJob({
   cronTime: time,
   onTick: function() {
     // Runs in jobs days
     // at exactly 23:30:00.
-    closeAllLogs();
-    startBackup();
+
+    var date = new Date();
+    
+    if(date.getMinutes() == 30 && date.getHours() == 23 && (/*date.getDay() != 5 && */date.getDay() != 6) ) {
+      console.log('Day: '+date.getDay());
+      console.log('Minutes: '+date.getMinutes());
+      console.log('Hours: '+date.getHours());
+      closeAllLogs();
+      startBackup();
+    }
+    
   },
   start: false,
   timeZone: 'Europe/Warsaw'

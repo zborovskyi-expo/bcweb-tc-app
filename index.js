@@ -111,16 +111,10 @@ app.use(function(req, res, next) {
   app.use('/', routes);
   //debug_mode = true;
 
-  if(debug_mode == true) {
+  if(ipInfo.clientIp == const_ip || debug_mode == true) {
     app.use('/users', users);
     app.use('/logs', logs);
     app.use('/settings', settings);
-  } else {
-    if(ipInfo.clientIp == const_ip) {
-      app.use('/users', users);
-      app.use('/logs', logs);
-      app.use('/settings', settings);
-    }
   }
   
   next();
