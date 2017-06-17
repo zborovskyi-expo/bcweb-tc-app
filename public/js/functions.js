@@ -1,11 +1,5 @@
 $(window).load(function(){
 
-  function startTime() {
-    var time = convertToMinutes(getTimeNowString()) - convertToMinutes($('#clock_content').text());
-    time = convertToString(time);
-    return time;
-  }
-
   function checkLenght(text) {
     if (text < 10) text = '0' + text;
     return text;
@@ -67,16 +61,19 @@ $(window).load(function(){
   if($("#clock_content").length) {
     var myVar = setInterval(function() {
       myTimer();
+      if(!$("#clock_content").hasClass('active')) {
+        $("#clock_content").addClass('active');
+      }
     }, 1000);
   }
 
-
+  const time_save = $("#clock_content").html();
+  
   function myTimer() {
-    var time_save = startTime();
     var time_now = getTimeNowString();
 
     if(time_save != time_now) {
-      document.getElementById("clock_content").innerHTML = getSumTime(time_save, time_now);
+      $("#clock_content").html(getSumTime(time_save, time_now));
     }
   }
 

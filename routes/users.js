@@ -269,7 +269,13 @@ function getMyLogs(docs, username) {
   var logChunks = [];
 
   docs.sort(function(a,b) { 
-    return new Date(a.date).getTime() - new Date(b.date).getTime() 
+    var date_f = a.date.split("/");
+    var date_s = b.date.split("/");
+    
+    date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
+    date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
+    
+    return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
   docs = getPersonalLogs(docs, username);
@@ -302,12 +308,10 @@ function getMyLastLogTime(docs, username) {
   var date = getDateString('slash');
 
   for (var i = 0; i < docs.length; i += chunkSize) {
-    if(docs[i].username == username) {
-      if(docs[i].date == date) {
-        if(docs[i].status == 'started') {
-          return docs[i].time_start;
-        }
-      }
+    if(docs[i].username == username && docs[i].date == date && docs[i].status == 'started') {
+      return docs[i].time_start;
+    } else {
+      return '';
     }
   }
 }
@@ -334,8 +338,14 @@ function getLogs(docs) {
   var chunkSize = 1;
   var logChunks = [];
 
-  docs.sort(function(a,b) { 
-    return new Date(a.date).getTime() - new Date(b.date).getTime() 
+  docs.sort(function(a,b) {
+    var date_f = a.date.split("/");
+    var date_s = b.date.split("/");
+    
+    date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
+    date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
+    
+    return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
   setDateAdvanced(docs);
@@ -350,7 +360,13 @@ function getLogsByName(docs, usename) {
   var logChunks = [];
 
   docs.sort(function(a,b) { 
-    return new Date(a.date).getTime() - new Date(b.date).getTime() 
+    var date_f = a.date.split("/");
+    var date_s = b.date.split("/");
+    
+    date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
+    date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
+    
+    return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
   setDateAdvanced(docs);
@@ -365,7 +381,13 @@ function getLogsByMonth(docs, username) {
   var logChunks = [];
 
   docs.sort(function(a,b) { 
-    return new Date(a.date).getTime() - new Date(b.date).getTime() 
+    var date_f = a.date.split("/");
+    var date_s = b.date.split("/");
+    
+    date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
+    date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
+    
+    return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
   setDateAdvanced(docs);
@@ -414,12 +436,6 @@ router.get('/profile', function(req, res){
       var userChunks = [];
       var chunkSize = 1;
       var time_start = getMyLastLogTime(docs, local_username);
-      
-      if(time_start) {
-        var time_now = getSumTime(time_start, getTimeString());
-      } else {
-        var time_now = '';
-      }
 
       var button = getMyLastLog(docs, local_username);
       var title = '';
@@ -443,7 +459,7 @@ router.get('/profile', function(req, res){
       User.find(function(err, docs) {
         userChunks = getUsers(docs);
         
-        res.render('profile', { title: lang['profile'], desc: lang['wc_profile'], users: userChunks, logs: logChunks, button_status: button, button_title: title, time_now: time_now});
+        res.render('profile', { title: lang['profile'], desc: lang['wc_profile'], users: userChunks, logs: logChunks, button_status: button, button_title: title, time_start: time_start});
       });
 
     });
@@ -457,21 +473,16 @@ router.get('/profile', function(req, res){
 // My Logs
 router.get('/profile/my_logs', function(req, res){
 
-  var local_username = res.locals.user.username;
-  var title = lang['my_logs'];
-  var desc = lang['wc_my_logs'];
-
   if(req.isAuthenticated()) {
+    
+    var local_username = res.locals.user.username;
+    var title = lang['my_logs'];
+    var desc = lang['wc_my_logs'];    
+    
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
       var time_start = getMyLastLogTime(docs, local_username);
-
-      if(time_start) {
-        var time_now = getSumTime(time_start, getTimeString());
-      } else {
-        var time_now = '';
-      }
 
       logChunks = getMyLogs(docs, local_username);
 
@@ -479,7 +490,7 @@ router.get('/profile/my_logs', function(req, res){
         
         userChunks = getUsers(docs);
         
-        res.render('my_logs', { title: title, desc: desc, users: userChunks, logs: logChunks, time_now: time_now });
+        res.render('my_logs', { title: title, desc: desc, users: userChunks, logs: logChunks, time_start: time_start });
       });
 
     });
@@ -491,9 +502,9 @@ router.get('/profile/my_logs', function(req, res){
 // All Logs
 router.get('/profile/all_logs', function(req, res){
 
-  var title = lang['all_logs'];
-
   if(req.isAuthenticated()) {
+    var title = lang['all_logs'];
+
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
@@ -516,9 +527,9 @@ router.get('/profile/all_logs', function(req, res){
 
 router.get('/profile/logs_by_month', function(req, res){
 
-  var title = lang['logs_by_month'];
-
   if(req.isAuthenticated()) {
+    var title = lang['logs_by_month'];
+
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
@@ -541,24 +552,25 @@ router.get('/profile/logs_by_month', function(req, res){
 
 router.get('/profile/logs_by_user/:username', function(req, res){
 
-  var username = req.params.username;
-  var title = lang['logs_by_user'] + username;
-  var desc = lang['wc_logs_by_user'] + username;
-  
-
   if(req.isAuthenticated()) {
+    var local_username = req.params.username;
+    var title = lang['logs_by_user'] + local_username;
+    var desc = lang['wc_logs_by_user'] + local_username;
+
     Log.find(function(err, docs) {
       
       var logChunks = [];
       var chunkSize = 1;
 
-      logChunks = getMyLogs(docs, username);
+      var time_start = getMyLastLogTime(docs, local_username);
+      
+      logChunks = getMyLogs(docs, local_username);
 
       User.find(function(err, docs) {
         
         userChunks = getUsers(docs);
         
-        res.render('my_logs', { title: title, users: userChunks, logs: logChunks });
+        res.render('my_logs', { title: title, users: userChunks, logs: logChunks, time_start: time_start });
         
       });
 
@@ -570,105 +582,111 @@ router.get('/profile/logs_by_user/:username', function(req, res){
 
 // Create New log
 router.post('/profile', function(req, res){
+
+  if(req.isAuthenticated()) {
     
-  var sum_time = '';
+    var sum_time = '';
 
-  var username = req.body.username;
+    var username = req.body.username;
 
-  var date = getDateString('slash');
-  var time = getTimeString();
+    var date = getDateString('slash');
+    var time = getTimeString();
 
 
-  Log.find(function(err, docs) {
-    var status = 'started';
-    var chunkSize = 1;
-    var logsSize = 0;
-    var sub_time = '';
+    Log.find(function(err, docs) {
+      var status = 'started';
+      var chunkSize = 1;
+      var logsSize = 0;
+      var sub_time = '';
 
-    function checkLogStatus(doc) {
-      if(doc.date == date && doc.username == username && doc.status == 'started') {
-        status = 'overed';
-        sum_time = getSumTime(doc.time_start, time);
-      } else {
-        logsSize = 0;
+      function checkLogStatus(doc) {
+        if(doc.date == date && doc.username == username && doc.status == 'started') {
+          status = 'overed';
+          sum_time = getSumTime(doc.time_start, time);
+        } else {
+          logsSize = 0;
 
-        if(doc.date == date && doc.username == username && doc.status == 'overed') {
-          status = 'error';
-        } 
-      }
-    }
-
-    docs = getPersonalLogs(docs, username);
-
-    if(docs.length==1) {
-      checkLogStatus(docs[0]);
-    }
-
-    if(docs.length>1) {
-      for (var i = 0; i < docs.length; i += chunkSize) {
-        checkLogStatus(docs[i]);
-      }
-    }
-
-    if(status == 'started') {
-
-      var newLog = new Log({
-        date: date,
-        time_start: time,
-        time_over: '',
-        status: status,
-        username: username,
-        sum_time: ''
-      });
-
-      Log.createLog(newLog, function(err, log){
-        if(err) throw err;
-        console.log(log);
-      });
-
-      req.flash('success_msg', lang['log_added']);
-      res.redirect('/users/profile/my_logs');
-
-    }
-
-    if(status == 'overed') {
-
-      Log.find(function(err, docs) {
-
-        if(err) throw err;
-        
-        if(docs.length==1) {
-          if(docs[0].date == date && docs[0].username == username) {
-            docs[0].time_over = time;
-            docs[0].status = status;
-            docs[0].sum_time = sum_time;
-            docs[0].save();
-          }
+          if(doc.date == date && doc.username == username && doc.status == 'overed') {
+            status = 'error';
+          } 
         }
+      }
 
-        if(docs.length>1) {
-          for (var i = 0; i < docs.length; i += chunkSize) {
-            if(docs[i].date == date && docs[i].username == username) {
-              docs[i].time_over = time;
-              docs[i].status = status;
-              docs[i].sum_time = sum_time;
-              docs[i].save();   
+      docs = getPersonalLogs(docs, username);
+
+      if(docs.length==1) {
+        checkLogStatus(docs[0]);
+      }
+
+      if(docs.length>1) {
+        for (var i = 0; i < docs.length; i += chunkSize) {
+          checkLogStatus(docs[i]);
+        }
+      }
+
+      if(status == 'started') {
+
+        var newLog = new Log({
+          date: date,
+          time_start: time,
+          time_over: '',
+          status: status,
+          username: username,
+          sum_time: ''
+        });
+
+        Log.createLog(newLog, function(err, log){
+          if(err) throw err;
+          console.log(log);
+        });
+
+        req.flash('success_msg', lang['log_added']);
+        res.redirect('/users/profile/my_logs');
+
+      }
+
+      if(status == 'overed') {
+
+        Log.find(function(err, docs) {
+
+          if(err) throw err;
+          
+          if(docs.length==1) {
+            if(docs[0].date == date && docs[0].username == username) {
+              docs[0].time_over = time;
+              docs[0].status = status;
+              docs[0].sum_time = sum_time;
+              docs[0].save();
             }
           }
-        }
 
-      });
+          if(docs.length>1) {
+            for (var i = 0; i < docs.length; i += chunkSize) {
+              if(docs[i].date == date && docs[i].username == username) {
+                docs[i].time_over = time;
+                docs[i].status = status;
+                docs[i].sum_time = sum_time;
+                docs[i].save();   
+              }
+            }
+          }
 
-      req.flash('success_msg', lang['log_finished']);
-      res.redirect('/users/profile/my_logs');
-    
-    }
+        });
 
-    if(status == 'error') {
-      req.flash('error_msg', lang['logs_limit']);
-      res.redirect('/users/profile');
-    }
-  });
+        req.flash('success_msg', lang['log_finished']);
+        res.redirect('/users/profile/my_logs');
+      
+      }
+
+      if(status == 'error') {
+        req.flash('error_msg', lang['logs_limit']);
+        res.redirect('/users/profile');
+      }
+    });
+
+  } else {
+    res.redirect('/users/login');
+  }
 
 });
 
