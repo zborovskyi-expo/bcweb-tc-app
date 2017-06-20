@@ -308,10 +308,12 @@ function getMyLastLogTime(docs, username) {
   var date = getDateString('slash');
 
   for (var i = 0; i < docs.length; i += chunkSize) {
+    /*if(docs[i].username == username) {
+      console.log(date);
+      console.log(docs[i].date);
+    }*/
     if(docs[i].username == username && docs[i].date == date && docs[i].status == 'started') {
       return docs[i].time_start;
-    } else {
-      return '';
     }
   }
 }
@@ -435,7 +437,7 @@ router.get('/profile', function(req, res){
       var logChunks = [];
       var userChunks = [];
       var chunkSize = 1;
-      var time_start = getMyLastLogTime(docs, local_username);
+      var time_start = getMyLastLogTime(docs, local_username) || '';
 
       var button = getMyLastLog(docs, local_username);
       var title = '';
@@ -482,7 +484,7 @@ router.get('/profile/my_logs', function(req, res){
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
-      var time_start = getMyLastLogTime(docs, local_username);
+      var time_start = getMyLastLogTime(docs, local_username) || '';
 
       logChunks = getMyLogs(docs, local_username);
 
@@ -562,7 +564,7 @@ router.get('/profile/logs_by_user/:username', function(req, res){
       var logChunks = [];
       var chunkSize = 1;
 
-      var time_start = getMyLastLogTime(docs, local_username);
+      var time_start = getMyLastLogTime(docs, local_username) || '';
       
       logChunks = getMyLogs(docs, local_username);
 
