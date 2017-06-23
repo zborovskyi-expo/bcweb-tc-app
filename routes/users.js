@@ -4,7 +4,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var lang = require('../public/js/lang.js').lang;
 var backup = require('mongodb-backup');
-var cronJob = require('cron').CronJob;
+var CronJob = require('cron').CronJob;
 var sendmail = require('sendmail')();
 
 var User = require('../models/user');
@@ -869,27 +869,25 @@ function startBackup() {
 var time = '30 23 * * 1-5';
 time = '0 * * * * *';
 
-var job = new cronJob({
-  cronTime: time,
+var job = new CronJob({
+  cronTime: time, 
   onTick: function() {
-    // Runs in jobs days
-    // at exactly 23:30:00.
+
+    console.log('start the cron job');
 
     var date = new Date();
     
     if(date.getMinutes() == 30 && date.getHours() == 23 && (date.getDay() != 6 && date.getDay() != 0) ) {
-      /*console.log('Day: '+date.getDay());
-      console.log('Minutes: '+date.getMinutes());
-      console.log('Hours: '+date.getHours());*/
       closeAllLogs();
       startBackup();
     }
 
   },
-  start: false,
+  onComplete: function() {
+    console.log('stop the cron job');
+  },
+  start: true,
   timeZone: 'Europe/Warsaw'
 });
-
-job.start();
 
 module.exports = router;
