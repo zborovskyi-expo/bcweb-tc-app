@@ -22,7 +22,7 @@ function getUsers(docs) {
   var userChunks = [];
   for (var i = 0; i < docs.length; i += chunkSize) {
     userChunks.push(docs[i].username);
-  } 
+  }
 
   return userChunks;
 }
@@ -34,7 +34,7 @@ function getUsersByUsername(docs, username) {
     if(username == docs[i].username) {
       userChunks.push(docs[i].username);
     }
-  } 
+  }
 
   return userChunks;
 }
@@ -70,7 +70,7 @@ function setLogsByStatus(docs, option) {
   var status = 'overed';
 
   var time = '18:00';
-  
+
   for (var i = 0; i < docs.length; i += chunkSize) {
 
     var criteria = option;
@@ -78,7 +78,7 @@ function setLogsByStatus(docs, option) {
     Log.update(criteria, {status: status, time_over: time, sum_time: getSumTime(docs[i].time_start, time) }, function(err) {
       if(err) console.log(err);
     });
-    
+
   }
 }
 
@@ -92,23 +92,23 @@ function convertMinutes(time) {
 function getSumTime(time_start, time_over) {
 
   var chunkSize = 1;
-  
+
   time_start = convertMinutes(time_start);
   time_over = convertMinutes(time_over);
-  
+
   var sum_time = time_over - time_start;
 
   if(sum_time>=60) {
     sum_hours = Math.floor(sum_time/60);
     sum_minutes = sum_time%60;
-    
+
     sum_hours = checkLenght(sum_hours);
     sum_minutes = checkLenght(sum_minutes);
 
     sum_time = sum_hours+':'+sum_minutes;
   } else {
     sum_time = checkLenght(sum_time);
-    sum_time = '00:'+sum_time;  
+    sum_time = '00:'+sum_time;
   }
 
   return sum_time;
@@ -126,7 +126,7 @@ function getTimeOfMonth(docs, month, username) {
       docs[i].month = Number(dateNow[1]);
 
       if(docs[i].month == month && docs[i].status == 'overed') {
-        sum_time += convertMinutes(docs[i].sum_time); 
+        sum_time += convertMinutes(docs[i].sum_time);
       }
     }
 
@@ -135,7 +135,7 @@ function getTimeOfMonth(docs, month, username) {
       docs[i].month = Number(dateNow[1]);
 
       if(docs[i].month == month && docs[i].status == 'overed') {
-        sum_time += convertMinutes(docs[i].sum_time); 
+        sum_time += convertMinutes(docs[i].sum_time);
       }
     }
   }
@@ -146,11 +146,11 @@ function getTimeOfMonth(docs, month, username) {
 
     sum_hours = checkLenght(sum_hours);
     sum_minutes = checkLenght(sum_minutes);
-    
+
     sum_time = sum_hours+':'+sum_minutes;
   } else {
     sum_time = checkLenght(sum_time);
-    sum_time = '00:'+sum_time;  
+    sum_time = '00:'+sum_time;
   }
 
   return sum_time;
@@ -159,7 +159,7 @@ function getTimeOfMonth(docs, month, username) {
 
 
 function setDateAdvanced(docs) {
-  
+
   var chunkSize = 1;
 
   for (var i = 0; i < docs.length; i += chunkSize) {
@@ -171,18 +171,18 @@ function setDateAdvanced(docs) {
 }
 
 function setDateBreak(docs, logChunks) {
-  
+
   var chunkSize = 1;
 
   for (var i = 0; i < docs.length; i += chunkSize) {
     var monthNow = docs[i].month;
-    
+
     if(i!=0) {
       var monthBefore = docs[i-1].month;
     } else {
       var monthBefore = monthNow;
     }
-    
+
     if(i==docs.length-1) {
       var monthAfter = monthNow;
     } else {
@@ -234,20 +234,20 @@ function setDateBreak(docs, logChunks) {
       docs[i].beforeBreak = false;
     }
 
-    
+
     if(breakAfter) {
       docs[i].afterBreak = true;
     } else {
       docs[i].afterBreak = false;
     }
-    
+
     if(breakAfter) {
-      docs[i].all_time = getTimeOfMonth(docs, docs[i].month, false);      
+      docs[i].all_time = getTimeOfMonth(docs, docs[i].month, false);
     }
 
     logChunks.push(docs[i]);
   }
-  
+
 }
 
 function getPersonalLogs(docs, username) {
@@ -257,7 +257,7 @@ function getPersonalLogs(docs, username) {
 
   for (var i = 0; i < docs.length; i += chunkSize) {
     if(docs[i].username == username) {
-      logChunks.push(docs[i]); 
+      logChunks.push(docs[i]);
     }
   }
 
@@ -268,18 +268,18 @@ function getMyLogs(docs, username) {
   var chunkSize = 1;
   var logChunks = [];
 
-  docs.sort(function(a,b) { 
+  docs.sort(function(a,b) {
     var date_f = a.date.split("/");
     var date_s = b.date.split("/");
-    
+
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
-    
+
     return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
   docs = getPersonalLogs(docs, username);
-  
+
   setDateAdvanced(docs);
 
   setDateBreak(docs, logChunks);
@@ -343,10 +343,10 @@ function getLogs(docs) {
   docs.sort(function(a,b) {
     var date_f = a.date.split("/");
     var date_s = b.date.split("/");
-    
+
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
-    
+
     return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
@@ -361,13 +361,13 @@ function getLogsByName(docs, usename) {
   var chunkSize = 1;
   var logChunks = [];
 
-  docs.sort(function(a,b) { 
+  docs.sort(function(a,b) {
     var date_f = a.date.split("/");
     var date_s = b.date.split("/");
-    
+
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
-    
+
     return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
@@ -382,20 +382,20 @@ function getLogsByMonth(docs, username) {
   var chunkSize = 1;
   var logChunks = [];
 
-  docs.sort(function(a,b) { 
+  docs.sort(function(a,b) {
     var date_f = a.date.split("/");
     var date_s = b.date.split("/");
-    
+
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
-    
+
     return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
 
   setDateAdvanced(docs);
-  
+
   setDateBreak(docs, logChunks);
-  
+
   return logChunks;
 }
 
@@ -445,7 +445,7 @@ router.get('/profile', function(req, res){
       if(button!='start' && button!='end') {
         button = 'primary';
         title = lang['click_start'];
-        
+
       } else {
         if(button=='start') {
           button = 'danger';
@@ -460,7 +460,7 @@ router.get('/profile', function(req, res){
 
       User.find(function(err, docs) {
         userChunks = getUsers(docs);
-        
+
         res.render('profile', { title: lang['profile'], desc: lang['wc_profile'], users: userChunks, logs: logChunks, button_status: button, button_title: title, time_start: time_start});
       });
 
@@ -476,11 +476,11 @@ router.get('/profile', function(req, res){
 router.get('/profile/my_logs', function(req, res){
 
   if(req.isAuthenticated()) {
-    
+
     var local_username = res.locals.user.username;
     var title = lang['my_logs'];
-    var desc = lang['wc_my_logs'];    
-    
+    var desc = lang['wc_my_logs'];
+
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
@@ -489,9 +489,9 @@ router.get('/profile/my_logs', function(req, res){
       logChunks = getMyLogs(docs, local_username);
 
       User.find(function(err, docs) {
-        
+
         userChunks = getUsers(docs);
-        
+
         res.render('my_logs', { title: title, desc: desc, users: userChunks, logs: logChunks, time_start: time_start });
       });
 
@@ -514,9 +514,9 @@ router.get('/profile/all_logs', function(req, res){
       logChunks = getLogs(docs);
 
       User.find(function(err, docs) {
-        
+
         userChunks = getUsers(docs);
-        
+
         res.render('all_logs', { title: title, users: userChunks, logs: logChunks });
 
       });
@@ -535,17 +535,17 @@ router.get('/profile/logs_by_month', function(req, res){
     Log.find(function(err, docs) {
       var logChunks = [];
       var chunkSize = 1;
-      
+
       logChunks = getLogs(docs);
 
       User.find(function(err, docs) {
-        
+
         userChunks = getUsers(docs);
-        
+
         res.render('my_logs', { title: title, users: userChunks, logs: logChunks });
-        
+
       });
-      
+
     });
   } else {
     res.redirect('/users/login');
@@ -560,20 +560,20 @@ router.get('/profile/logs_by_user/:username', function(req, res){
     var desc = lang['wc_logs_by_user'] + local_username;
 
     Log.find(function(err, docs) {
-      
+
       var logChunks = [];
       var chunkSize = 1;
 
       var time_start = getMyLastLogTime(docs, local_username) || '';
-      
+
       logChunks = getMyLogs(docs, local_username);
 
       User.find(function(err, docs) {
-        
+
         userChunks = getUsers(docs);
-        
+
         res.render('my_logs', { title: title, users: userChunks, logs: logChunks, time_start: time_start });
-        
+
       });
 
     });
@@ -586,7 +586,7 @@ router.get('/profile/logs_by_user/:username', function(req, res){
 router.post('/profile', function(req, res){
 
   if(req.isAuthenticated()) {
-    
+
     var sum_time = '';
 
     var username = req.body.username;
@@ -610,7 +610,7 @@ router.post('/profile', function(req, res){
 
           if(doc.date == date && doc.username == username && doc.status == 'overed') {
             status = 'error';
-          } 
+          }
         }
       }
 
@@ -652,7 +652,7 @@ router.post('/profile', function(req, res){
         Log.find(function(err, docs) {
 
           if(err) throw err;
-          
+
           if(docs.length==1) {
             if(docs[0].date == date && docs[0].username == username) {
               docs[0].time_over = time;
@@ -668,7 +668,7 @@ router.post('/profile', function(req, res){
                 docs[i].time_over = time;
                 docs[i].status = status;
                 docs[i].sum_time = sum_time;
-                docs[i].save();   
+                docs[i].save();
               }
             }
           }
@@ -677,7 +677,7 @@ router.post('/profile', function(req, res){
 
         req.flash('success_msg', lang['log_finished']);
         res.redirect('/users/profile/my_logs');
-      
+
       }
 
       if(status == 'error') {
@@ -700,18 +700,18 @@ router.post('/register', function(req, res){
   var status = req.body.status;
   var password = req.body.password;
   var password2 = req.body.password2;
-  
+
   // Validation
   req.checkBody('username', lang['un_req']).notEmpty();
   req.checkBody('password', lang['pass_req']).notEmpty();
   req.checkBody('password2', lang['pass_d_match']).equals(req.body.password);
-  
+
   var errors = req.validationErrors();
 
   if(errors){
 
     res.render('register', {
-      errors: errors 
+      errors: errors
     });
 
   } else {
@@ -821,9 +821,9 @@ function startBackup() {
     var email_from = 'bohdan.blabla@blabla.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
     //email_to = 'bcwebapp.backup@gmail.com';
-    
+
     backup({
-      uri: mongodbUrl,  
+      uri: mongodbUrl,
       root: backup_root,
       parser: 'json',
       tar: backup_name+'.tar',
@@ -854,9 +854,9 @@ function startBackup() {
         }
       }
     });
-   
+
   }
-   
+
   Log.find(function(err, docs){
     var logChunks = [];
     var chunkSize = 1;
@@ -868,15 +868,15 @@ function startBackup() {
 
 var time = '30 23 * * 1-5';
 time = '0 * * * * *';
-
+var count_job = 0;
 var job = new CronJob({
-  cronTime: time, 
+  cronTime: time,
   onTick: function() {
-
-    console.log('start the cron job');
+    count_job++;
+    console.log('start the cron job: '+count_job);
 
     var date = new Date();
-    
+
     if(date.getMinutes() == 30 && date.getHours() == 23 && (date.getDay() != 6 && date.getDay() != 0) ) {
       closeAllLogs();
       startBackup();
