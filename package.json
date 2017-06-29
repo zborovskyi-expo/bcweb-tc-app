@@ -15,7 +15,6 @@
     "connect-flash": "*",
     "cookie-parser": "^1.4.1",
     "cron": "^1.2.1",
-    "csv-export": "^1.0.1",
     "express": "*",
     "express-handlebars": "*",
     "express-messages": "*",

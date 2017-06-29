@@ -183,9 +183,9 @@ function convertToCSV(docs, title) {
   fs.writeFile('files/'+title+'.csv', docs, function(err) {
     if (err) throw err;
     console.log('file saved');
-    var email_from = 'bohdan.blabla@blabla.com';
+    var email_from = 'bcwebapp.backup@gmail.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
-    email_to = 'bohdan.zborovskyi@gmail.com';
+    //email_to = 'bohdan.zborovskyi@gmail.com';
 
     sendmail({
       from: email_from,
