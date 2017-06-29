@@ -869,11 +869,13 @@ function startBackup() {
 
 var time = '30 23 * * 1-5';
 time = '0 * * * * *';
+var time_counter = 0;
 var job = new CronJob({
   cronTime: time,
   onTick: function() {
     var date = new Date();
-
+    time_counter++;
+    console.log(time_counter);
     if(date.getMinutes() == 30 && date.getHours() == 23 && (date.getDay() != 6 && date.getDay() != 0) ) {
       closeAllLogs();
       startBackup();

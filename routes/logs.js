@@ -15,9 +15,28 @@ function checkLenght(text) {
   if (text < 10) text = '0' + text;
   return text;
 }
+
 function convertMinutes(time) {
   time = time.split(':');
   time = Number(time[0]) * 60 + Number(time[1]);
+
+  return time;
+}
+
+function convertHours(time) {
+
+  if(time>=60) {
+    hours = Math.floor(time/60);
+    minutes = time%60;
+
+    hours = checkLenght(hours);
+    minutes = checkLenght(minutes);
+
+    time = hours+':'+minutes;
+  } else {
+    time = checkLenght(time);
+    time = '00:'+time;
+  }
 
   return time;
 }
@@ -158,16 +177,22 @@ function convertToCSV(docs, title) {
 
     return new Date(date_f).getTime() - new Date(date_s).getTime();
   });
-
+  var sum_time = 0;
   for (var i = 0; i < docs.length; i += chunkSize) {
     var object = {};
     object.date = docs[i].date;
     object.time_start = docs[i].time_start;
     object.time_over = docs[i].time_over;
     object.sum_time = docs[i].sum_time;
-
     logChunks.push(object);
+    if(docs[i].sum_time != "") {
+      sum_time += convertMinutes(docs[i].sum_time);
+    }
   }
+
+  sum_time = convertHours(sum_time);
+
+  logChunks.push({date: '', time_start: '', time_over: '', sum_time: sum_time});
 
   docs = logChunks;
 
