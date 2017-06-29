@@ -18,9 +18,9 @@ $(window).load(function(){
 
     hours = checkLenght(hours);
     minutes = checkLenght(minutes);
-    
+
     time = hours+':'+minutes;
-    
+
     return time;
   }
 
@@ -36,16 +36,16 @@ $(window).load(function(){
   }
 
   function getSumTime(time_start, time_over) {
-    
+
     time_start = convertToMinutes(time_start);
     time_over = convertToMinutes(time_over);
-    
+
     var sum_time = time_over - time_start;
 
     if(sum_time>=60) {
       sum_hours = Math.floor(sum_time/60);
       sum_minutes = sum_time%60;
-      
+
       sum_hours = checkLenght(sum_hours);
       sum_minutes = checkLenght(sum_minutes);
 
@@ -67,8 +67,20 @@ $(window).load(function(){
     }, 1000);
   }
 
+  if($("#date.form-control").length) {
+    var date_now = new Date();
+
+    var day = checkLenght(date_now.getDate());
+    var month = checkLenght(date_now.getMonth()+1);
+    var year = date_now.getFullYear();
+
+    var date = year+'-'+month+'-'+day;
+
+    $("#date.form-control").val(date);
+  }
+
   const time_save = $("#clock_content").html();
-  
+
   function myTimer() {
     var time_now = getTimeNowString();
 

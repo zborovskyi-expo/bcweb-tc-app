@@ -11,6 +11,7 @@ var User = require('../models/user');
 var Log = require('../models/log');
 
 var monthNames = [0, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var monthNamesPL = [0, "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
 
 function checkLenght(text) {
   if (text < 10) text = '0' + text;
@@ -69,7 +70,7 @@ function setLogsByStatus(docs, option) {
 
   var status = 'overed';
 
-  var time = '18:00';
+  var time = '23:30';
 
   for (var i = 0; i < docs.length; i += chunkSize) {
 
@@ -98,20 +99,24 @@ function getSumTime(time_start, time_over) {
 
   var sum_time = time_over - time_start;
 
-  if(sum_time>=60) {
-    sum_hours = Math.floor(sum_time/60);
-    sum_minutes = sum_time%60;
+  if(sum_time>=0) {
+    if(sum_time>=60) {
+      sum_hours = Math.floor(sum_time/60);
+      sum_minutes = sum_time%60;
 
-    sum_hours = checkLenght(sum_hours);
-    sum_minutes = checkLenght(sum_minutes);
+      sum_hours = checkLenght(sum_hours);
+      sum_minutes = checkLenght(sum_minutes);
 
-    sum_time = sum_hours+':'+sum_minutes;
+      sum_time = sum_hours+':'+sum_minutes;
+    } else {
+      sum_time = checkLenght(sum_time);
+      sum_time = '00:'+sum_time;
+    }
+
+    return sum_time;
   } else {
-    sum_time = checkLenght(sum_time);
-    sum_time = '00:'+sum_time;
+    return '00:00';
   }
-
-  return sum_time;
 }
 
 function getTimeOfMonth(docs, month, username) {
@@ -308,10 +313,6 @@ function getMyLastLogTime(docs, username) {
   var date = getDateString('slash');
 
   for (var i = 0; i < docs.length; i += chunkSize) {
-    /*if(docs[i].username == username) {
-      console.log(date);
-      console.log(docs[i].date);
-    }*/
     if(docs[i].username == username && docs[i].date == date && docs[i].status == 'started') {
       return docs[i].time_start;
     }
@@ -868,13 +869,9 @@ function startBackup() {
 
 var time = '30 23 * * 1-5';
 time = '0 * * * * *';
-var count_job = 0;
 var job = new CronJob({
   cronTime: time,
   onTick: function() {
-    count_job++;
-    console.log('start the cron job: '+count_job);
-
     var date = new Date();
 
     if(date.getMinutes() == 30 && date.getHours() == 23 && (date.getDay() != 6 && date.getDay() != 0) ) {

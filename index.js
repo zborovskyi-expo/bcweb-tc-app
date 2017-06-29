@@ -8,30 +8,26 @@ var flash = require('connect-flash');
 var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-//var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var lang = require('./public/js/lang.js').lang;
 
+const config = require('./config/database');
+
 var debug_mode = false;
 
-var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
-                replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
+//var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
 
-var dbname = 'admin';
+// Connect To Database
+mongoose.connect(config.database);
 
-var dbpass = 'admin';
-
-var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
-
-mongoose.connect(mongodbUrl, options);
-
-var db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'connection error:'));
-
-db.once('open', function() {
+// On Connection
+mongoose.connection.on('connected', () => {
   console.log(lang["connected_mongo"]);
-  // Wait for the database connection to establish, then start the app.
+});
+
+// On Error
+mongoose.connection.on('error', (err) => {
+  console.log('Database error: '+err);
 });
 
 var routes = require('./routes/index');
@@ -109,7 +105,8 @@ app.use(function(req, res, next) {
   var ipInfo = getIP(req);
 
   app.use('/', routes);
-  //debug_mode = true;
+  debug_mode = true;
+
 
   if(ipInfo.clientIp == const_ip || debug_mode == true) {
     app.use('/users', users);

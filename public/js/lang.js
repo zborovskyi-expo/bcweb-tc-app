@@ -18,13 +18,25 @@ var lang = {
   "un_req": "Wymagana jest nazwa użytkownika",
   "pass_req": "Wymagane jest hasło",
   "pass_d_match": "Hasła nie pasują do siebie",
+  "date_req": "Wymagana jest data",
+  "status_req": "Wymagany jest status",
+  "time_start_req": "Wymagany jest czas startu logowania",
+  "time_over_req": "Wymagany jest czas końcu logowania",
   "user_exist": "Podana nazwa użytkownika już istnieje",
   "registered": "Jesteś zarejestrowany i możesz się zalogować",
   "user_unknown": "Nieznany użytkownik",
   "inv_pass": "Nieprawidłowe hasło",
   "connected_mongo": "Połączono z serwerem mongo",
   "server_started": "Serwer uruchomiony na porcie ",
-  "profile": "Profil"
+  "profile": "Profil",
+  "log_exist": "Log takiej daty i użytkownika już istnieje",
+  "log_export": "Plik wyeksportowany",
+  "log_notexist": "Log o takiej dacie i nazwie użytkownika nie istnieje",
+  "log_changed": "Log został zmieniony",
+  "log_added_auto": "Log został dodany",
+  "month_req": "Wymagany jest miesiąc",
+  "year_req": "Wymagany jest",
+  "export_failed": "Eksportowanie nie powiodło się. Sprawdź nazwe użytkownika albo datę"
 };//pl
 
 module.exports.lang = lang;
