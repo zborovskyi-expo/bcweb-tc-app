@@ -789,6 +789,43 @@ router.get('/logout', function(req, res){
   res.redirect('/users/login');
 });
 
+function createEmptyLogs() {
+  var userChunks = [];
+  User.find(function(err, docs) {
+
+    userChunks = getUsers(docs);
+    Log.find(function(err, docs) {
+      var log = [];
+      for(var i = 0; i<userChunks.length; i++) {
+        var username = userChunks[i];
+        var date = getDateString('slash');
+
+        for(var j = 0; j<docs.length; j++) {
+          if(docs[j].username == username && docs[j].date == date) {
+            log.push(docs[j]);
+          }
+        }
+
+        if(log.length == 0) {
+          var newLog = new Log({
+            date: date,
+            time_start: '00:00',
+            time_over: '00:00',
+            status: 'overed',
+            username: username,
+            sum_time: '00:00'
+          });
+
+          Log.createLog(newLog, function(err, log){
+            if(err) throw err;
+            console.log(log);
+          });
+        }
+      }
+    });
+
+  });
+}
 
 function closeAllLogs() {
   Log.find(function(err, docs) {
@@ -867,13 +904,13 @@ function startBackup() {
   });
 }
 
-var time = '30 23 * * 1-5';
+var time = '30 23 * * *';
 //time = '0 * * * * *';
-var time_counter = 0;
 var job = new CronJob({
   cronTime: time,
   onTick: function() {
     closeAllLogs();
+    createEmptyLogs();
     startBackup();
   },
   onComplete: function() {
