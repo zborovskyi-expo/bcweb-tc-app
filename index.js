@@ -123,5 +123,5 @@ app.use(function(req, res, next) {
 const port = 8080;
 
 app.listen(/*app.get('port')*/port, function(){
-  console.log(lang["server_started"]+app.get('port'));
+  console.log(lang["server_started"]+/*app.get('port')*/port);
 });
