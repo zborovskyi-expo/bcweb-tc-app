@@ -238,7 +238,21 @@ router.get('/', function(req, res){
   if(req.isAuthenticated()) {
     var title = 'Operację nad logami';
     var desc = 'Tutaj możesz wykonywać operację nad logami';
-    res.render('logs', { title: title, desc: desc });
+
+    Log.find(function(err, docs) {
+
+      var chunkSize = 1;
+
+      User.find(function(err, docs) {
+
+        userChunks = getUsers(docs);
+
+        res.render('logs', { title: title, desc: desc, users: userChunks });
+
+      });
+
+    });
+
   } else {
     res.redirect('/users/login');
   }
