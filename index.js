@@ -118,8 +118,10 @@ app.use(function(req, res, next) {
 
 
 // Set Port
-app.set('port', (process.env.PORT || 8080));
+//app.set('port', (process.env.PORT || 8080));
+// Port Number
+const port = 8080;
 
-app.listen(app.get('port'), function(){
+app.listen(/*app.get('port')*/port, function(){
   console.log(lang["server_started"]+app.get('port'));
 });
