@@ -123,3 +123,9 @@ app.set('port', (process.env.PORT || 8080));
 app.listen(app.get('port'), function(){
   console.log(lang["server_started"]+app.get('port'));
 });
+
+
+var http = require("http");
+setInterval(function() {
+  http.get("http://bcweb-app.herokuapp.com");
+}, 900000);

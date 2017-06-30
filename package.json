@@ -21,6 +21,7 @@
     "express-session": "*",
     "express-validator": "*",
     "fs": "0.0.1-security",
+    "http": "0.0.0",
     "ipware": "^1.0.0",
     "json2csv": "^3.7.3",
     "mongodb": "*",
