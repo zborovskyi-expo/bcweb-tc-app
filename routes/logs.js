@@ -234,25 +234,27 @@ function convertToCSV(docs, title) {
 
 // logs
 router.get('/', function(req, res){
-  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
-    //console.log(res);
-    var title = 'Operację nad logami';
-    var desc = 'Tutaj możesz wykonywać operację nad logami';
+  if(req.isAuthenticated()) {
+    if(res.locals.user.status == 'admin') {
+      var title = 'Operację nad logami';
+      var desc = 'Tutaj możesz wykonywać operację nad logami';
 
-    Log.find(function(err, docs) {
+      Log.find(function(err, docs) {
 
-      var chunkSize = 1;
+        var chunkSize = 1;
 
-      User.find(function(err, docs) {
+        User.find(function(err, docs) {
 
-        userChunks = getUsers(docs);
+          userChunks = getUsers(docs);
 
-        res.render('logs', { title: title, desc: desc, users: userChunks });
+          res.render('logs', { title: title, desc: desc, users: userChunks });
+
+        });
 
       });
-
-    });
-
+    } else {
+      res.redirect('/users/profile');
+    }
   } else {
     res.redirect('/users/login');
   }
@@ -260,23 +262,27 @@ router.get('/', function(req, res){
 
 // get add logs
 router.get('/add_log', function(req, res){
-  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
-    var title = 'Dodawanie logów';
-    var desc = 'Tutaj możesz dodać nowy log';
+  if(req.isAuthenticated()) {
+    if(res.locals.user.status == 'admin') {
+      var title = 'Dodawanie logów';
+      var desc = 'Tutaj możesz dodać nowy log';
 
-    Log.find(function(err, docs) {
+      Log.find(function(err, docs) {
 
-      var chunkSize = 1;
+        var chunkSize = 1;
 
-      User.find(function(err, docs) {
+        User.find(function(err, docs) {
 
-        userChunks = getUsers(docs);
+          userChunks = getUsers(docs);
 
-        res.render('add_log', { title: title, desc: desc, users: userChunks });
+          res.render('add_log', { title: title, desc: desc, users: userChunks });
+
+        });
 
       });
-
-    });
+    } else {
+      res.redirect('/users/profile');
+    }
   } else {
     res.redirect('/users/login');
   }
@@ -284,23 +290,28 @@ router.get('/add_log', function(req, res){
 
 // edit logs
 router.get('/edit_log', function(req, res){
-  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
-    var title = 'Zmienianie logów';
-    var desc = 'Tutaj możesz zmienić dowolny log';
+  if(req.isAuthenticated()) {
+    if(res.locals.user.status == 'admin') {
+      var title = 'Zmienianie logów';
+      var desc = 'Tutaj możesz zmienić dowolny log';
 
-    Log.find(function(err, docs) {
+      Log.find(function(err, docs) {
 
-      var chunkSize = 1;
+        var chunkSize = 1;
 
-      User.find(function(err, docs) {
+        User.find(function(err, docs) {
 
-        userChunks = getUsers(docs);
+          userChunks = getUsers(docs);
 
-        res.render('edit_log', { title: title, desc: desc, users: userChunks });
+          res.render('edit_log', { title: title, desc: desc, users: userChunks });
+
+        });
 
       });
+    } else {
+      res.redirect('/users/profile');
+    }
 
-    });
   } else {
     res.redirect('/users/login');
   }
@@ -308,27 +319,32 @@ router.get('/edit_log', function(req, res){
 
 // export logs
 router.get('/export_logs', function(req, res){
-  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
-    var title = 'Exportowanie logów';
-    var desc = 'Tutaj możesz wyeksportować logi według użytkownika i miesiąca';
+  if(req.isAuthenticated()) {
+    if(res.locals.user.status == 'admin') {
+      var title = 'Exportowanie logów';
+      var desc = 'Tutaj możesz wyeksportować logi według użytkownika i miesiąca';
 
-    Log.find(function(err, docs) {
+      Log.find(function(err, docs) {
 
-      var chunkSize = 1;
+        var chunkSize = 1;
 
-      yearChunks = getYears(docs);
+        yearChunks = getYears(docs);
 
-      monthChunks = getMonths(docs);
+        monthChunks = getMonths(docs);
 
-      User.find(function(err, docs) {
+        User.find(function(err, docs) {
 
-        userChunks = getUsers(docs);
+          userChunks = getUsers(docs);
 
-        res.render('export_logs', { title: title, desc: desc, users: userChunks, months: monthChunks, years: yearChunks });
+          res.render('export_logs', { title: title, desc: desc, users: userChunks, months: monthChunks, years: yearChunks });
+
+        });
 
       });
 
-    });
+    } else {
+      res.redirect('/users/profile');
+    }
   } else {
     res.redirect('/users/login');
   }
