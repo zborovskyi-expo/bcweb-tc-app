@@ -207,7 +207,6 @@ function convertToCSV(docs, title) {
 
   fs.writeFile('files/'+title+'.csv', docs, function(err) {
     if (err) throw err;
-    console.log('file saved');
     var email_from = 'bcwebapp.backup@gmail.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
     //email_to = 'bohdan.zborovskyi@gmail.com';
@@ -235,7 +234,8 @@ function convertToCSV(docs, title) {
 
 // logs
 router.get('/', function(req, res){
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
+    //console.log(res);
     var title = 'Operację nad logami';
     var desc = 'Tutaj możesz wykonywać operację nad logami';
 
@@ -260,7 +260,7 @@ router.get('/', function(req, res){
 
 // get add logs
 router.get('/add_log', function(req, res){
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
     var title = 'Dodawanie logów';
     var desc = 'Tutaj możesz dodać nowy log';
 
@@ -284,7 +284,7 @@ router.get('/add_log', function(req, res){
 
 // edit logs
 router.get('/edit_log', function(req, res){
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
     var title = 'Zmienianie logów';
     var desc = 'Tutaj możesz zmienić dowolny log';
 
@@ -308,7 +308,7 @@ router.get('/edit_log', function(req, res){
 
 // export logs
 router.get('/export_logs', function(req, res){
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
     var title = 'Exportowanie logów';
     var desc = 'Tutaj możesz wyeksportować logi według użytkownika i miesiąca';
 

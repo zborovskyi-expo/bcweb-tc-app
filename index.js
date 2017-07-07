@@ -105,7 +105,7 @@ app.use(function(req, res, next) {
   var ipInfo = getIP(req);
 
   app.use('/', routes);
-  //debug_mode = true;
+  debug_mode = false;
 
   if(ipInfo.clientIp == const_ip || debug_mode == true) {
     app.use('/users', users);

@@ -505,7 +505,7 @@ router.get('/profile/my_logs', function(req, res){
 // All Logs
 router.get('/profile/all_logs', function(req, res){
 
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
     var title = lang['all_logs'];
 
     Log.find(function(err, docs) {
@@ -555,7 +555,7 @@ router.get('/profile/logs_by_month', function(req, res){
 
 router.get('/profile/logs_by_user/:username', function(req, res){
 
-  if(req.isAuthenticated()) {
+  if(req.isAuthenticated() && res.locals.user.status == 'admin') {
     var local_username = req.params.username;
     var title = lang['logs_by_user'] + local_username;
     var desc = lang['wc_logs_by_user'] + local_username;
