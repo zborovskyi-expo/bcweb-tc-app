@@ -15,8 +15,6 @@ const config = require('./config/database');
 
 var debug_mode = false;
 
-//var mongodbUrl = 'mongodb://'+dbname+':'+dbpass+'@ds127321.mlab.com:27321/time_saver';
-
 // Connect To Database
 mongoose.connect(config.database);
 

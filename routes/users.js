@@ -802,9 +802,10 @@ function createEmptyLogs() {
   User.find(function(err, docs) {
 
     userChunks = getUsers(docs);
+
     Log.find(function(err, docs) {
-      var log = [];
       for(var i = 0; i<userChunks.length; i++) {
+        var log = [];
         var username = userChunks[i];
         var date = getDateString('slash');
 
@@ -911,6 +912,7 @@ function startBackup() {
     createBackup(logChunks);
   });
 }
+
 
 var time = '30 23 * * *';
 //time = '0 * * * * *';
