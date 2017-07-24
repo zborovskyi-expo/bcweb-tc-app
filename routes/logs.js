@@ -292,7 +292,7 @@ router.get('/add_log', function(req, res){
 router.get('/edit_log', function(req, res){
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
-      var title = 'Zmienianie logów';
+      var title = 'Edytowanie logów';
       var desc = 'Tutaj możesz zmienić dowolny log';
 
       Log.find(function(err, docs) {
