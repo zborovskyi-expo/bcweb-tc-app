@@ -280,7 +280,7 @@ function getMyLogs(docs, username) {
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
 
-    return new Date(date_f).getTime() - new Date(date_s).getTime();
+    return new Date(date_s).getTime() - new Date(date_f).getTime();
   });
 
   docs = getPersonalLogs(docs, username);
@@ -348,7 +348,7 @@ function getLogs(docs) {
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
 
-    return new Date(date_f).getTime() - new Date(date_s).getTime();
+    return new Date(date_s).getTime() - new Date(date_f).getTime();
   });
 
   setDateAdvanced(docs);
@@ -369,7 +369,7 @@ function getLogsByName(docs, usename) {
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
 
-    return new Date(date_f).getTime() - new Date(date_s).getTime();
+    return new Date(date_s).getTime() - new Date(date_f).getTime();
   });
 
   setDateAdvanced(docs);
@@ -390,7 +390,7 @@ function getLogsByMonth(docs, username) {
     date_f = date_f[1]+'/'+date_f[0]+'/'+date_f[2];
     date_s = date_s[1]+'/'+date_s[0]+'/'+date_s[2];
 
-    return new Date(date_f).getTime() - new Date(date_s).getTime();
+    return new Date(date_s).getTime() - new Date(date_f).getTime();
   });
 
   setDateAdvanced(docs);
