@@ -96,20 +96,20 @@ app.use(function(req, res, next){
   next();
 });
 
-var const_ip = '80.55.43.241';
-var getIP = require('ipware')().get_ip;
+//var const_ip = '80.55.43.241';
+//var getIP = require('ipware')().get_ip;
 
 app.use(function(req, res, next) {
-  var ipInfo = getIP(req);
+  //var ipInfo = getIP(req);
 
   app.use('/', routes);
-  debug_mode = false;
+  //debug_mode = false;
 
-  if(ipInfo.clientIp == const_ip || debug_mode == true) {
+  //if(ipInfo.clientIp == const_ip || debug_mode == true) {
     app.use('/users', users);
     app.use('/logs', logs);
     app.use('/settings', settings);
-  }
+  //}
 
   next();
 });
