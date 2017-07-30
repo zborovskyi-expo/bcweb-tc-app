@@ -706,7 +706,7 @@ router.post('/profile', function(req, res){
 router.post('/register', function(req, res){
 
   var username = req.body.username;
-  var status = req.body.status;
+  var status = 'user';
   var password = req.body.password;
   var password2 = req.body.password2;
 
