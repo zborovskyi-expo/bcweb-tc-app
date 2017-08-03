@@ -84,8 +84,6 @@ app.use(flash());
 
 var res_url = '';
 // Global Vars
-//const const_ip = '80.55.43.241';
-//const getIP = require('ipware')().get_ip;
 
 app.use(function(req, res, next){
   res.locals.success_msg = req.flash('success_msg');
@@ -101,16 +99,11 @@ app.use(function(req, res, next){
 
 
 app.use(function(req, res, next) {
-  //var ipInfo = getIP(req);
 
   app.use('/', routes);
-  //debug_mode = false;
-
-  //if(ipInfo.clientIp == const_ip || debug_mode == true) {
-    app.use('/users', users);
-    app.use('/logs', logs);
-    app.use('/settings', settings);
-  //}
+  app.use('/users', users);
+  app.use('/logs', logs);
+  app.use('/settings', settings);
 
   next();
 });

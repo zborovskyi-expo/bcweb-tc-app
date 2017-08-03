@@ -441,12 +441,12 @@ router.get('/register', checkIp, function(req, res){
 });
 
 // Login
-router.get('/login', function(req, res){
+router.get('/login', checkIp, function(req, res){
   res.render('login');
 });
 
 // Profile
-router.get('/profile', function(req, res){
+router.get('/profile', checkIp, function(req, res){
   if(req.isAuthenticated()) {
 
     var local_username = res.locals.user.username;
@@ -491,7 +491,7 @@ router.get('/profile', function(req, res){
 });
 
 // My Logs
-router.get('/profile/my_logs', function(req, res){
+router.get('/profile/my_logs', checkIp, function(req, res){
 
   if(req.isAuthenticated()) {
 
@@ -520,7 +520,7 @@ router.get('/profile/my_logs', function(req, res){
 });
 
 // All Logs
-router.get('/profile/all_logs', function(req, res){
+router.get('/profile/all_logs', checkIp, function(req, res){
 
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
@@ -549,7 +549,7 @@ router.get('/profile/all_logs', function(req, res){
   }
 });
 
-router.get('/profile/logs_by_month', function(req, res){
+router.get('/profile/logs_by_month', checkIp, function(req, res){
 
   if(req.isAuthenticated()) {
     var title = lang['logs_by_month'];
@@ -574,7 +574,7 @@ router.get('/profile/logs_by_month', function(req, res){
   }
 });
 
-router.get('/profile/logs_by_user/:username', function(req, res){
+router.get('/profile/logs_by_user/:username', checkIp, function(req, res){
 
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
@@ -609,7 +609,7 @@ router.get('/profile/logs_by_user/:username', function(req, res){
 });
 
 // Create New log
-router.post('/profile', function(req, res){
+router.post('/profile', checkIp, function(req, res){
 
   if(req.isAuthenticated()) {
 
@@ -720,7 +720,7 @@ router.post('/profile', function(req, res){
 
 
 // Register User
-router.post('/register', function(req, res){
+router.post('/register', checkIp, function(req, res){
 
   var username = req.body.username;
   var status = 'user';
@@ -806,7 +806,7 @@ passport.deserializeUser(function(id, done){
 router.post('/login',
   passport.authenticate('local', {successRedirect: '/users/profile', failureRedirect: '/users/login', failureFlash: true}));
 
-router.get('/logout', function(req, res){
+router.get('/logout', checkIp, function(req, res){
   req.logout();
 
   req.flash('success_msg', lang['logged_out']);

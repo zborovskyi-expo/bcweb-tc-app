@@ -11,6 +11,8 @@ var Log = require('../models/log');
 var monthNames = [0, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var monthNamesPL = [0, "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
 
+var debug_mode = false;
+
 function checkLenght(text) {
   if (text < 10) text = '0' + text;
   return text;
@@ -148,6 +150,21 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function checkIp(req, res, next) {
+
+  //debug_mode = true
+  const const_ip = '80.55.43.241';
+  const getIP = require('ipware')().get_ip;
+  const ipInfo = getIP(req);
+
+  if(ipInfo.clientIp == const_ip || debug_mode == true) {
+    return next();
+  } else {
+    req.flash('error_msg', lang['not_good_ip']);
+    res.render('error_404');
+  }
+}
+
 function getTitleCSV(username, month, year) {
   var title = '';
   username = username.split('.');
@@ -233,7 +250,7 @@ function convertToCSV(docs, title) {
 }
 
 // logs
-router.get('/', function(req, res){
+router.get('/', checkIp, function(req, res){
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
       var title = 'Operację nad logami';
@@ -261,7 +278,7 @@ router.get('/', function(req, res){
 });
 
 // get add logs
-router.get('/add_log', function(req, res){
+router.get('/add_log', checkIp, function(req, res){
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
       var title = 'Dodawanie logów';
@@ -289,7 +306,7 @@ router.get('/add_log', function(req, res){
 });
 
 // edit logs
-router.get('/edit_log', function(req, res){
+router.get('/edit_log', checkIp, function(req, res){
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
       var title = 'Edytowanie logów';
@@ -318,7 +335,7 @@ router.get('/edit_log', function(req, res){
 });
 
 // export logs
-router.get('/export_logs', function(req, res){
+router.get('/export_logs', checkIp, function(req, res){
   if(req.isAuthenticated()) {
     if(res.locals.user.status == 'admin') {
       var title = 'Exportowanie logów';
@@ -352,7 +369,7 @@ router.get('/export_logs', function(req, res){
 
 
 // post add logs
-router.post('/add_log', function(req, res){
+router.post('/add_log', checkIp, function(req, res){
   if(req.isAuthenticated()) {
 
     var sum_time = '';
@@ -440,7 +457,7 @@ router.post('/add_log', function(req, res){
 });
 
 // post edit logs
-router.post('/edit_log', function(req, res){
+router.post('/edit_log', checkIp, function(req, res){
   if(req.isAuthenticated()) {
 
     var sum_time = '';
@@ -510,7 +527,7 @@ router.post('/edit_log', function(req, res){
 });
 
 // post edit logs
-router.post('/export_logs', function(req, res){
+router.post('/export_logs', checkIp, function(req, res){
   if(req.isAuthenticated()) {
 
     var username = req.body.username;
