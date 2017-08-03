@@ -10,6 +10,8 @@ var sendmail = require('sendmail')();
 var User = require('../models/user');
 var Log = require('../models/log');
 
+var debug_mode = false;
+
 var monthNames = [0, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var monthNamesPL = [0, "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
 
@@ -420,13 +422,12 @@ function isNotAuthenticated(req, res, next){
 
 function checkIp(req, res, next) {
 
+  //debug_mode = true
   const const_ip = '80.55.43.241';
   const getIP = require('ipware')().get_ip;
   const ipInfo = getIP(req);
-  console.log(const_ip);
-  console.log(ipInfo.clientIp);
 
-  if(ipInfo.clientIp == const_ip) {
+  if(ipInfo.clientIp == const_ip || debug_mode == true) {
     return next();
   } else {
     req.flash('error_msg', lang['not_good_ip']);
