@@ -418,8 +418,24 @@ function isNotAuthenticated(req, res, next){
   }
 }
 
+function checkIp(req, res, next) {
+
+  const const_ip = '80.55.43.241';
+  const getIP = require('ipware')().get_ip;
+  const ipInfo = getIP(req);
+  console.log(const_ip);
+  console.log(ipInfo.clientIp);
+
+  if(ipInfo.clientIp == const_ip) {
+    return next();
+  } else {
+    req.flash('error_msg', lang['not_good_ip']);
+    res.render('error_404');
+  }
+}
+
 // Register
-router.get('/register', function(req, res){
+router.get('/register', checkIp, function(req, res){
   res.render('register');
 });
 

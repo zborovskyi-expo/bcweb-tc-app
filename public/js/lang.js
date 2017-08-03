@@ -36,7 +36,8 @@ var lang = {
   "log_added_auto": "Log został dodany",
   "month_req": "Wymagany jest miesiąc",
   "year_req": "Wymagany jest",
-  "export_failed": "Eksportowanie nie powiodło się. Sprawdź nazwe użytkownika albo datę"
+  "export_failed": "Eksportowanie nie powiodło się. Sprawdź nazwe użytkownika albo datę",
+  "not_good_ip": "Przepraszamy ale twój ip jest nie poprawny"
 };//pl
 
 module.exports.lang = lang;
