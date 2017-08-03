@@ -209,7 +209,7 @@ function convertToCSV(docs, title) {
     if (err) throw err;
     var email_from = 'bcwebapp.backup@gmail.com';
     var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
-    //email_to = 'bohdan.zborovskyi@gmail.com';
+    email_to = 'bohdan.zborovskyi@gmail.com';
 
     sendmail({
       from: email_from,
