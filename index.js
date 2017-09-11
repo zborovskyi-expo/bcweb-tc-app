@@ -119,5 +119,5 @@ app.listen(app.get('port'), function(){
 var http = require("http");
 setInterval(function() {
   http.get("http://bcweb-app.herokuapp.com");
-  console.log('WAKE UP!!!');
+  //console.log('WAKE UP!!!');
 }, 900000);
