@@ -883,7 +883,7 @@ function startBackup() {
     var backup_root = 'backup';
     var backup_name = 'backup_'+date;
     var email_from = 'bohdan.blabla@blabla.com';
-    var email_to = 'bcwebapp.backup@gmail.com, pawel@bcweb.pl';
+    var email_to = 'bcwebapp.backup@gmail.com, backup@biuro.bcweb.pl';
     //email_to = 'bcwebapp.backup@gmail.com';
 
     backup({
