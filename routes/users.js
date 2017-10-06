@@ -184,6 +184,14 @@ function setDateBreak(docs, logChunks) {
   for (var i = 0; i < docs.length; i += chunkSize) {
     var monthNow = docs[i].month;
 
+    var d = new Date(docs[i].year, docs[i].month-1, docs[i].day);
+
+    if(d.getDay() == 0 || d.getDay() == 6){
+      docs[i].weekend = true;
+    } else {
+      docs[i].weekend = false;
+    }
+
     if(i!=0) {
       var monthBefore = docs[i-1].month;
     } else {

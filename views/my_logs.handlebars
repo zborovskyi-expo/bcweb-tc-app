@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
       {{/if}}
-        <tr>
+        <tr {{#if this.weekend }}class="weekend"{{/if}}>
           <td>{{this.date}}</td>
           <td>{{this.time_start}}</td>
           <td>{{this.time_over}}</td>
@@ -37,14 +37,12 @@
           <td>{{this.status}}</td>
           <td>{{this.sum_time}}</td>
         </tr>
-        
-
       {{#if this.afterBreak }}
                   <tr>
                     <td colspan="6" class="all_time">Suma godzin: {{this.all_time}}</td>
                   </tr>
                 </tbody>
-              </table>    
+              </table>
             </div>
           </div><!-- /panel-body -->
         </div><!-- /panel -->

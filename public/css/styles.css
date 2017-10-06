@@ -42,6 +42,10 @@ body {
 	}
 }
 
+.weekend {
+	background-color: rgba(0,0,0,.1) !important;
+}
+
 /* Top Navigation */
 
 .top-nav {
@@ -254,7 +258,7 @@ ul.alert-dropdown {
 
 .checkbox {
 	margin: 0;
-} 
+}
 
 .footer {
   display: flex;
@@ -319,7 +323,7 @@ ul.alert-dropdown {
   font-size: 20px;
   z-index: 1000;
   opacity: 0;
-  transition: .35s ease; 
+  transition: .35s ease;
 }
 
 .clock.active {
