@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{lang.name_short}}">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
-	<title>Time Counter - BCWEB.PL</title>
+	<title>{{ lang.title }}</title>
 
 	<link rel="icon" href="/images/fav.png">
 
@@ -22,97 +22,116 @@
 	<!-- Custom Fonts -->
 	<link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+	<!-- Bootstrap Select CSS -->
+	<link href="/css/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+
 </head>
 <body>
 
 	<div id="wrapper">
 		<!-- Navigation -->
-				<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-						<!-- Brand and toggle get grouped for better mobile display -->
-						<div class="navbar-header">
-							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-								<span class="sr-only">Toggle navigation</span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-								<span class="icon-bar"></span>
-							</button>
-							<a class="navbar-brand" href="/"><img class="logo_bc" src="/images/logo_white.svg" alt="home"></a>
-						</div>
-						<!-- Top Menu Items -->
-						<ul class="nav navbar-right top-nav">
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{user.username}} <b class="caret"></b></a>
-								<ul class="dropdown-menu">
-									<li role="presentation">
-										<a href="/"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
-									</li>
-									{{#if user}}
-										<li role="presentation">
-											<a href="/users/profile"><i class="fa fa-fw fa-user"></i> Profile</a>
-										</li>
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/"><img class="logo_bc" src="/images/logo_white.svg" alt="home"></a>
+			</div>
+			<!-- Top Menu Items -->
+			<ul class="nav navbar-right top-nav">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe"></i><span class="item_title">{{ lang.language }}</span><b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						{{#each languages}}
+							<li role="presentation">
+								<a href="/settings/change_language/{{this.name_short}}" {{#ifEquals ../lang.name_short this.name_short}}class="link-active"{{/ifEquals}}><i class="fa fa-language" aria-hidden="true"></i><span class="item_title">{{ this.name_full }}</span></a>
+							</li>
+						{{/each}}
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><span class="item_title">{{ user.username }}</span><b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li role="presentation">
+							<a href="/"><i class="fa fa-home" aria-hidden="true"></i><span class="item_title">{{ lang.home }}</span></a>
+						</li>
+						{{#if user}}
+							<li role="presentation">
+								<a href="/users/profile"><i class="fa fa-fw fa-user"></i><span class="item_title">{{ lang.profile }}</span></a>
+							</li>
+							<li>
+								<a href="/users/profile/my_logs"><i class="fa fa-fw fa-envelope"></i><span class="item_title">{{ lang.my_logs }}</span></a>
+							</li>
+							<li class="divider"></li>
+							<li role="presentation">
+								<a href="/users/logout"><i class="fa fa-sign-out" aria-hidden="true"></i><span class="item_title">{{ lang.log_out }}</span></a>
+							</li>
+						{{else}}
+							<li role="presentation">
+								<a href="/users/login"><i class="fa fa-sign-in" aria-hidden="true"></i><span class="item_title">{{ lang.log_in }}</span></a>
+							</li>
+							<li class="divider"></li>
+							<li role="presentation">
+								<a href="/users/register"><i class="fa fa-registered" aria-hidden="true"></i><span class="item_title">{{ lang.registration }}</span></a>
+							</li>
+						{{/if}}
+					</ul>
+				</li>
+			</ul>
+			<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+			<div class="collapse navbar-collapse navbar-ex1-collapse" id="left_navi">
+				<div class="hidden" id="res_url">{{res_url}}</div>
+				<ul class="nav navbar-nav side-nav">
+					{{#unless user }}
+						<li class="active">
+							<a href="/"><i class="fa fa-fw fa-dashboard"></i><span class="item_title">{{ lang.dashboard }}</span></a>
+						</li>
+					{{/unless}}
+					{{#if user}}
+						<li>
+							<a href="/users/profile"><i class="fa fa-fw fa-user"></i><span class="item_title">{{ lang.profile }}</span></a>
+						</li>
+						<li>
+							<a href="/users/profile/my_logs"><i class="fa fa-fw fa-table"></i><span class="item_title">{{ lang.my_logs }}</span></a>
+						</li>
+						<li>
+							<a href="/users/profile/add_time_plus"><i class="fa fa-fw fa-table"></i><span class="item_title">{{ lang.add_time_plus }}</span></a>
+						</li>
+						{{#ifEquals user.status "admin"}}
+							<li>
+								<a href="/users/profile/all_logs"><i class="fa fa-fw fa-table"></i><span class="item_title">{{ lang.all_logs }}</span></a>
+							</li>
+							<li>
+								<a href="/users/profile/summary_logs"><i class="fa fa-fw fa-table"></i><span class="item_title">{{ lang.summary_logs }}</span></a>
+							</li>
+						  <li>
+								<a href="javascript:;" data-toggle="collapse" data-target="#all_users">
+									<i class="fa fa-users" aria-hidden="true"></i><span class="item_title">{{ lang.logs_users }}</span><i class="fa fa-fw fa-caret-down"></i>
+								</a>
+								<ul id="all_users" class="collapse">
+								  {{#each users }}
 										<li>
-											<a href="/users/profile/my_logs"><i class="fa fa-fw fa-envelope"></i> Moje zapisy</a>
+								    	<a href="/users/profile/logs_by_user/{{this}}"><i class="fa fa-fw fa-user"></i><span class="item_title">{{this}}</span></a>
 										</li>
-										<li class="divider"></li>
-										<li role="presentation">
-											<a href="/users/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Wyloguj się</a>
-										</li>
-									{{else}}
-										<li role="presentation">
-											<a href="/users/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Zaloguj się</a>
-										</li>
-										<li class="divider"></li>
-										<li role="presentation">
-											<a href="/users/register"><i class="fa fa-registered" aria-hidden="true"></i> Rejestracja</a>
-										</li>
-									{{/if}}
+								  {{/each}}
 								</ul>
 							</li>
-						</ul>
-						<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-						<div class="collapse navbar-collapse navbar-ex1-collapse" id="left_navi">
-							<div class="hidden" id="res_url">{{res_url}}</div>
-							<ul class="nav navbar-nav side-nav">
-								{{#unless user }}
-									<li class="active">
-										<a href="/"><i class="fa fa-fw fa-dashboard"></i> Dashboard </a>
-									</li>
-								{{/unless}}
-								{{#if user}}
-									<li>
-										<a href="/users/profile"><i class="fa fa-fw fa-user"></i> Profile</a>
-									</li>
-									<li>
-										<a href="/users/profile/my_logs"><i class="fa fa-fw fa-table"></i> Moje zapisy</a>
-									</li>
-									{{#ifEquals user.status "admin"}}
-										<li>
-											<a href="/users/profile/all_logs"><i class="fa fa-fw fa-table"></i> Wszystkie zapisy</a>
-										</li>
-									  <li>
-											<a href="javascript:;" data-toggle="collapse" data-target="#all_users">
-												<i class="fa fa-users" aria-hidden="true"></i> Zapisy użytkowników <i class="fa fa-fw fa-caret-down"></i>
-											</a>
-											<ul id="all_users" class="collapse">
-											  {{#each users }}
-													<li>
-											    	<a href="/users/profile/logs_by_user/{{this}}"><i class="fa fa-fw fa-user"></i> {{this}}</a>
-													</li>
-											  {{/each}}
-											</ul>
-										</li>
-										<li>
-											<a href="/logs"><i class="fa fa-fw fa-edit"></i> Operacje nad logami</a>
-										</li>
-										<li>
-											<a href="/settings"><i class="fa fa-fw fa-edit"></i> Settings</a>
-										</li>
-									{{/ifEquals}}
-								{{/if}}
-							</ul>
-						</div>
-						<!-- /.navbar-collapse -->
-				</nav>
+							<li>
+								<a href="/logs"><i class="fa fa-fw fa-edit"></i><span class="item_title">{{ lang.logs_operations }}</span></a>
+							</li>
+							<li>
+								<a href="/settings"><i class="fa fa-fw fa-edit"></i><span class="item_title">{{ lang.settings }}</span></a>
+							</li>
+						{{/ifEquals}}
+					{{/if}}
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</nav>
 
 		<div id="page-wrapper">
 
@@ -153,8 +172,9 @@
 
 	<!-- Morris Charts JavaScript -->
 	<script src="/js/plugins/morris/raphael.min.js"></script>
-	<!--<script src="/js/plugins/morris/morris.min.js"></script>
-	<script src="/js/plugins/morris/morris-data.js"></script>-->
+
+	<!-- Bootstrap Select JavaScript -->
+	<script src="/js/bootstrap-select.min.js"></script>
 
 	<script src="/js/functions.js"></script>
 

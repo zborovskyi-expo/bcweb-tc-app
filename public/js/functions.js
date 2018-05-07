@@ -1,103 +1,78 @@
 $(window).load(function(){
 
   function checkLenght(text) {
-    if (text < 10) text = '0' + text;
-    return text;
+    return (text < 10)?('0' + text):text
   }
 
   function convertToMinutes(time) {
-    time = time.split(':');
-    time = Number(time[0]) * 60 + Number(time[1]);
-
-    return time;
+    return Number(time.split(':')[0]) * 60 + Number(time.split(':')[1])
   }
 
   function convertToString(time) {
-    var hours = Math.floor(time/60);
-    var minutes = time%60;
-
-    hours = checkLenght(hours);
-    minutes = checkLenght(minutes);
-
-    time = hours+':'+minutes;
-
-    return time;
+    return checkLenght(Math.floor(time/60))+':'+checkLenght(time%60)
   }
 
   function getTimeNowString() {
-    var date_now = new Date();
-
-    var hours = checkLenght(date_now.getHours());
-    var minutes = checkLenght(date_now.getMinutes());
-
-    var time = hours+':'+minutes;
-
-    return time;
+    return checkLenght(new Date().getHours())+':'+checkLenght(new Date().getMinutes())
   }
 
-  function getSumTime(time_start, time_over) {
+  function getSumTime(time_start, time_over, time_plus) {
 
-    time_start = convertToMinutes(time_start);
-    time_over = convertToMinutes(time_over);
+    var sum_time = convertToMinutes(time_over) - convertToMinutes(time_start) + convertToMinutes(time_plus)
 
-    var sum_time = time_over - time_start;
+    if(sum_time>=60)
+      return checkLenght(Math.floor(sum_time/60))+':'+checkLenght(sum_time%60)
+    return '00:'+checkLenght(sum_time)
 
-    if(sum_time>=60) {
-      sum_hours = Math.floor(sum_time/60);
-      sum_minutes = sum_time%60;
-
-      sum_hours = checkLenght(sum_hours);
-      sum_minutes = checkLenght(sum_minutes);
-
-      sum_time = sum_hours+':'+sum_minutes;
-    } else {
-      sum_time = checkLenght(sum_time);
-      sum_time = '00:'+sum_time;
-    }
-
-    return sum_time;
   }
 
   if($("#clock_content").length) {
     var myVar = setInterval(function() {
-      myTimer();
-      if(!$("#clock_content").hasClass('active')) {
-        $("#clock_content").addClass('active');
-      }
-    }, 1000);
+      myTimer()
+      if(!$("#clock_content").hasClass('active'))
+        $("#clock_content").addClass('active')
+    }, 1000)
   }
 
   if($("#date.form-control").length) {
-    var date_now = new Date();
-
-    var day = checkLenght(date_now.getDate());
-    var month = checkLenght(date_now.getMonth()+1);
-    var year = date_now.getFullYear();
-
-    var date = year+'-'+month+'-'+day;
-
-    $("#date.form-control").val(date);
+    $("#date.form-control").val(new Date().getFullYear()+'-'+checkLenght(new Date().getMonth()+1)+'-'+checkLenght(new Date().getDate()))
   }
 
-  const time_save = $("#clock_content").html();
+  var time_save = $("#clock_content .clock_start").html()
+  var time_plus = $("#clock_content .clock_plus").html()
 
   function myTimer() {
     var time_now = getTimeNowString();
 
     if(time_save != time_now) {
-      $("#clock_content").html(getSumTime(time_save, time_now));
+      $("#clock_content .clock_start").html(getSumTime(time_save, time_now, time_plus));
     }
   }
 
   function checkNavi() {
-    var res_url = $('#res_url').text();
+    var res_url = $('#res_url').text()
     $('#left_navi li').each(function(){
       if($(this).find('a').attr('href') == res_url) {
-        $(this).addClass('active');
+        $(this).addClass('active')
       }
-    });
+    })
   }
 
-  checkNavi();
+  function initSelectUsername(){
+    if($('select#username'))
+      $('select#username').selectpicker()
 
-});
+    if($('select#language'))
+      $('select#language').selectpicker()
+  }
+
+
+  initSelectUsername()
+
+  checkNavi()
+
+})
+
+$(document).ready(function(){
+  $('[data-toggle="popover"]').popover()
+})

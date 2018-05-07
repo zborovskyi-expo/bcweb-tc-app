@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 // User Schema
-var LogSchema = mongoose.Schema({
+const LogSchema = mongoose.Schema({
   date: {
     type: String,
     index: true
@@ -12,6 +12,14 @@ var LogSchema = mongoose.Schema({
   time_over: {
     type: String
   },
+  time_plus: {
+    time: {
+      type: String
+    },
+    description: {
+      type: String
+    }
+  },
   status: {
     type: String
   },
@@ -21,10 +29,9 @@ var LogSchema = mongoose.Schema({
   sum_time: {
     type: String
   }
-});
+})
 
-var Log = module.exports = mongoose.model('Log', LogSchema);
+const Log = module.exports = mongoose.model('Log', LogSchema)
 
-module.exports.createLog = function(newLog, callback){
-  newLog.save(callback);
-}
+module.exports.createLog = (newLog, callback) =>
+  newLog.save(callback)

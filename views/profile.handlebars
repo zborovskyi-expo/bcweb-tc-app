@@ -1,14 +1,19 @@
 {{#ifNotEquals time_start ""}}
 	<div class="clock" id="clock_content">
-		{{time_start}}
+		<span class="clock_start">
+			{{time_start}}
+		</span>
+		<span class="clock_plus">
+			{{time_plus}}
+		</span>
 	</div>
 {{/ifNotEquals}}
 
 <!-- Page Heading -->
 <div class="row tac">
   <div class="col-lg-10">
-		<h1 class="page-header">{{ title }}</h1>
-		<p>{{ desc }}</p>
+		<h1 class="page-header">{{ lang.profile }}</h1>
+		<p>{{ lang.profile_desc }}</p>
   </div>
 </div>
 <!-- /.row -->
@@ -17,13 +22,11 @@
   <div class="col-lg-10">
 		<form method="post" action="/users/profile">
 		  <div class="form-group hidden">
-			<label>Status</label>
-			<input type="text" class="form-control" readonly 
-				   name="username" placeholder="Username" value="{{user.username}}">
+				<label>{{ lang.status }}</label>
+				<input type="text" class="form-control" readonly
+					   name="username" placeholder="Username" value="{{user.username}}">
 		  </div>
-  		
   		<button type="submit" class="btn spec-button btn-{{button_status}}">{{button_title}}</button>
-
 		</form>
   </div>
 </div>

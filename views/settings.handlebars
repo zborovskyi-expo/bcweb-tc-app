@@ -1,8 +1,28 @@
 <!-- Page Heading -->
 <div class="row">
   <div class="col-lg-12">
-  <h1 class="page-header">{{ title }}</h1>
-  <p>{{ desc }}</p>
+    <h1 class="page-header">{{ lang.settings }}</h1>
+    <p>{{ lang.settings_desc }}</p>
+    <ul class="nav">
+      <li>
+        <a href="/settings/edit_users"><i class="fa fa-fw fa-pencil-square"></i>{{ lang.edit_users }}</a>
+      </li>
+      <li>
+        <a href="javascript:;" data-toggle="collapse" data-target="#all_languages">
+          <i class="fa fa-globe" aria-hidden="true"></i><span class="item_title">{{ lang.edit_langs }}</span><i class="fa fa-fw fa-caret-down"></i>
+        </a>
+        <ul id="all_languages" class="collapse">
+          {{#each languages }}
+            <li>
+              <a href="/settings/edit_langs/{{this.name_short}}"><i class="fa fa-fw fa-language"></i><span class="item_title">{{this.name_full}}</span></a>
+            </li>
+          {{/each}}
+        </ul>
+      </li>
+      <li>
+        <a href="/settings/edit_blocking"><i class="fa fa-fw fa-check-square"></i>{{ lang.edit_blocking }}</a>
+      </li>
+    </ul>
   </div>
 </div>
 <!-- /.row -->

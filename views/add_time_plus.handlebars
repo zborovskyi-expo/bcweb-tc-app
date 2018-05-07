@@ -1,0 +1,33 @@
+<!-- Page Heading -->
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header">{{ lang.add_time_plus }}</h1>
+    <p>{{ lang.add_time_plus_desc }}</p>
+    <form action="/users/profile/add_time_plus" method="post">
+      <div class="form-group row">
+        <label class="control-label col-sm-2" for="date">{{ lang.date_text }}</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="date" name="date" value="2011-08-19" id="date">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="control-label col-sm-2" for="time">{{ lang.plus_time }}</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="time" name="time" value="00:00" id="time">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="control-label col-sm-2" for="desc">{{ lang.plus_desc }}</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="text" name="desc" value="" id="desc">
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">{{ lang.submit }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- /.row -->
