@@ -148,4 +148,25 @@ function getWorkplacesSchema(){
   })
 }
 
+function removeLogByOption(){
+  var option = {
+    username: 'bohdan.zborovskyi',
+    date: '08/05/2018',
+    // time_start: '09:09'
+  }
+
+  Log.findOne(option, (err, log) => {
+    if (log) {
+      console.log(log)
+      // log.remove()
+    }
+
+    if (!err) console.log('success!')
+    else console.log('error')
+  })
+
+}
+
 getWorkplacesSchema()
+
+// removeLogByOption()

@@ -15,7 +15,10 @@ const UserSchema = mongoose.Schema({
   },
   blockedByIp: {
     type: Boolean
-  }
+  },
+  // workplace: {
+  //   type: Number
+  // }
 });
 
 const User = module.exports = mongoose.model('User', UserSchema)

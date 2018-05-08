@@ -145,10 +145,9 @@ function getLogsByStatus(docs, status) {
 }
 
 function checkLogStatus(docs, date, username, time) {
-  
+
   var status = ''
   var sum_time = ''
-
   if(docs.date == date && docs.username == username && docs.status == 'started') {
     status = 'overed'
     sum_time = getSumTime(docs.time_start, time, (docs.time_plus)?docs.time_plus.time:'00:00')

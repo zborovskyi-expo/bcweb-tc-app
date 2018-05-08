@@ -217,17 +217,17 @@ router.post('/profile', checkIp, (req, res) => {
 
       logDocs = getPersonalLogs(logDocs, username)
 
-      if(logDocs.length==1) {
-        var statusAndSumTime = checkLogStatus(logDocs[0], date, username, time)
-        status = statusAndSumTime.status
-        sum_time = statusAndSumTime.sum_time
+      if(logDocs[0].logs.length==1) {
+        var statusAndSumTime = checkLogStatus(logDocs[0].logs[0], date, username, time)
+        status = (statusAndSumTime.status!='')?statusAndSumTime.status:status
+        sum_time = (statusAndSumTime.sum_time!='')?statusAndSumTime.sum_time:sum_time
       }
 
-      if(logDocs.length>1) {
-        for (var i = 0; i < logDocs.length; i++) {
-          var statusAndSumTime = checkLogStatus(logDocs[i], date, username, time)
-          status = statusAndSumTime.status
-          sum_time = statusAndSumTime.sum_time
+      if(logDocs[0].logs.length>1) {
+        for (var i = 0; i < logDocs[0].logs.length; i++) {
+          var statusAndSumTime = checkLogStatus(logDocs[0].logs[i], date, username, time)
+          status = (statusAndSumTime.status!='')?statusAndSumTime.status:status
+          sum_time = (statusAndSumTime.sum_time!='')?statusAndSumTime.sum_time:sum_time
         }
       }
 
