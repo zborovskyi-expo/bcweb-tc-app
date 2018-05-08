@@ -16,7 +16,7 @@ const express = require('express'),
       logs = require('./routes/logs'),
       settings = require('./routes/settings'),
       { closeAllLogs, createEmptyLogs, startBackup } = require('./actions/actions.js'),
-      CronJob = require('cron').CronJob
+      CronJob = require('cron').CronJob,
       app = express()
 
 class Server {
