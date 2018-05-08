@@ -1,0 +1,41 @@
+<h1 class="page-header">Schemat Pracowników</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panels">
+      {{#each workplaces }}
+        <div class="panel panel-workplace panel-primary" style="order: -{{ this.workplace }}">
+          <div class="panel-heading">
+            <h3 class="panel-title">Username: {{this.username}}</h3>
+          </div>
+          <div class="panel-body">
+            {{#if this.isWorkStarted}}
+              {{#ifNotEquals this.isWorkOvered ''}}
+                {{#ifEquals this.isWorkOvered 'overed'}}
+                  <div class="body-status">Status pracy: Skończona</div>
+                {{else}}
+                  <div class="body-status">Status pracy: Rozpoczęta</div>
+                {{/ifEquals}}
+              {{/ifNotEquals}}
+              {{#ifNotEquals this.workTimeStart ''}}
+                <div class="body-time_start">Zaczął o <span class="badge">{{ this.workTimeStart }}</span></div>
+              {{/ifNotEquals}}
+              {{#ifNotEquals this.workTimePlus '00:00'}}
+                {{#ifNotEquals this.workTimePlus ''}}
+                  <div class="body-time_plus">Nadgodziny <span class="badge">{{ this.workTimePlus }}</span></div>
+                {{/ifNotEquals}}
+              {{/ifNotEquals}}
+              {{#ifNotEquals this.workTimeOver ''}}
+                <div class="body-time_over">Czas zakończenia <span class="badge">{{ this.workTimeOver }}</span></div>
+                <div class="body-time_sum">Czas razem <span class="badge time_sum-counter"></span></div>
+              {{else}}
+                <div class="body-time_left">Pracuje już <span class="badge time_left-counter"></span></div>
+              {{/ifNotEquals}}
+            {{else}}
+              Nie pracuje
+            {{/if}}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

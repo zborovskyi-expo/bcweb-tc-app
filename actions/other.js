@@ -14,7 +14,7 @@ function checkIp(req, res, next) {
     return next()
   } else {
     req.flash('error_msg', res.locals.lang.not_good_ip)
-    res.redirect('../../error_404')
+    res.redirect('../../../error_404')
   }
 }
 

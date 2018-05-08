@@ -98,7 +98,7 @@ router.get('/workplaces', checkIp, (req, res) => {
         User.find((err, userDocs) => {
           res.render('workplaces', {
             users: getUsers(userDocs),
-            workplaces: getWorkplacesSchema(logDocs)
+            workplaces: getWorkplacesSchema(logDocs, userDocs)
           })
         })
 
@@ -212,8 +212,8 @@ router.post('/profile', checkIp, (req, res) => {
       var status = 'started'
       var sub_time = ''
 
-      var time_plus = getPersonalLastLogTimePlus(logDocs, username)
-      var time_desc = getPersonalLastLogTimeDesc(logDocs, username)
+      var time_plus = getPersonalLastLogTimePlus(logDocs, username) || '00:00'
+      var time_desc = getPersonalLastLogTimeDesc(logDocs, username) || ''
 
       logDocs = getPersonalLogs(logDocs, username)
 
@@ -237,7 +237,7 @@ router.post('/profile', checkIp, (req, res) => {
           date: date,
           time_start: time,
           time_over: '',
-          time_plus: { time: '00:00', description: '' },
+          time_plus: { time: time_plus, description: time_desc },
           status: status,
           username: username,
           sum_time: ''
@@ -262,7 +262,8 @@ router.post('/profile', checkIp, (req, res) => {
           if(logDocs.length==1) {
             if(logDocs[0].date == date && logDocs[0].username == username) {
               logDocs[0].time_over = time
-              logDocs[0].time_plus = { time: time_plus, desc: time_desc }
+              logDocs[0].time_plus.time = time_plus
+              logDocs[0].time_plus.desc = time_desc
               logDocs[0].status = status
               logDocs[0].sum_time = sum_time
               logDocs[0].save()
@@ -273,7 +274,8 @@ router.post('/profile', checkIp, (req, res) => {
             for (var i = 0; i < logDocs.length; i++) {
               if(logDocs[i].date == date && logDocs[i].username == username) {
                 logDocs[i].time_over = time
-                logDocs[i].time_plus = { time: time_plus, desc: time_desc }
+                logDocs[i].time_plus.time = time_plus
+                logDocs[i].time_plus.desc = time_desc
                 logDocs[i].status = status
                 logDocs[i].sum_time = sum_time
                 logDocs[i].save()

@@ -91,15 +91,33 @@ function getLogsByDate(docs, month, year) {
   return list
 }
 
+function getPersonalLastLogStatus(docs, username) {
+  for (var i = 0; i < docs.length; i++)
+    if(docs[i].username == username && docs[i].date == getDateString('slash'))
+      return docs[i].status
+}
+
 function getPersonalLastLogTime(docs, username) {
   for (var i = 0; i < docs.length; i++)
     if(docs[i].username == username && docs[i].date == getDateString('slash') && docs[i].status == 'started')
       return docs[i].time_start
 }
 
+function getPersonalLastLogTimeStart(docs, username) {
+  for (var i = 0; i < docs.length; i++)
+    if(docs[i].username == username && docs[i].date == getDateString('slash'))
+      return (docs[i].time_start)?docs[i].time_start:'00:00'
+}
+
+function getPersonalLastLogTimeOver(docs, username) {
+  for (var i = 0; i < docs.length; i++)
+    if(docs[i].username == username && docs[i].date == getDateString('slash') && docs[i].status == 'overed')
+      return docs[i].time_over
+}
+
 function getPersonalLastLogTimePlus(docs, username) {
   for (var i = 0; i < docs.length; i++)
-    if(docs[i].username == username && docs[i].date == getDateString('slash') && docs[i].status == 'started')
+    if(docs[i].username == username && docs[i].date == getDateString('slash'))
       if(docs[i].time_plus)
         return docs[i].time_plus.time
       return null
@@ -107,7 +125,7 @@ function getPersonalLastLogTimePlus(docs, username) {
 
 function getPersonalLastLogTimeDesc(docs, username) {
   for (var i = 0; i < docs.length; i++)
-    if(docs[i].username == username && docs[i].date == getDateString('slash') && docs[i].status == 'started')
+    if(docs[i].username == username && docs[i].date == getDateString('slash'))
       if(docs[i].time_plus)
         return docs[i].time_plus.description
       return null
@@ -319,8 +337,23 @@ function startBackup() {
   })
 }
 
-function getWorkplacesSchema(){
+function getWorkplacesSchema(logDocs, userDocs){
+  var schemaList = []
 
+  userDocs.forEach((item)=>{
+    if(item.workplace!=0)
+      schemaList.push({
+        username: item.username,
+        workplace: item.workplace,
+        workTimeStart: getPersonalLastLogTime(logDocs, item.username) || (getPersonalLastLogTimeStart(logDocs, item.username) || ''),
+        workTimePlus: getPersonalLastLogTimePlus(logDocs, item.username) || '',
+        workTimeOver: getPersonalLastLogTimeOver(logDocs, item.username) || '',
+        isWorkOvered: getPersonalLastLogStatus(logDocs, item.username) || '',
+        isWorkStarted: getPersonalLastLogStatus(logDocs, item.username)?getPersonalLastLogStatus(logDocs, item.username):false
+      })
+  })
+
+  return schemaList
 }
 
 
@@ -332,5 +365,6 @@ module.exports = {
   getPersonalLastLogTimeDesc, convertToMinutes, startBackup, convertToHours,
   capitalizeFirstLetter, checkIp, ifEqualsLog, getUsers, getYears, getMonths,
   getLogsByDate, getTitleCSV, convertToCSV, getMonthNames, getLogsSummary,
-  checkLogStatus
+  checkLogStatus, getWorkplacesSchema, getPersonalLastLogTimeOver,
+  getPersonalLastLogStatus, getPersonalLastLogTimeStart
 }

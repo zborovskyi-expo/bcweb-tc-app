@@ -21,10 +21,6 @@ mongoose.connection.on('error', (err) => {
   console.log('Database error: '+err)
 })
 
-// closeAllLogs()
-// createEmptyLogs()
-// startBackup()
-
 function startWorkForUsers(){
   User.find((err, userDocs) => {
 
@@ -85,30 +81,59 @@ function removeWorkForUsers(){
 function addWorkplaceForUsers(){
   User.find((err, userDocs) => {
     userDocs.forEach((item)=>{
+      // switch (item.username) {
+      //   case 'bohdan.zborovskyi':
+      //     item.workplace = 3
+      //     break
+      //   case 'admin':
+      //     item.workplace = 4
+      //     break
+      //   case 'pawel.cudny':
+      //     item.workplace = 2
+      //     break
+      //   case 'filip.bartnicki':
+      //     item.workplace = 1
+      //     break
+      //   case 'ilona.kaluska':
+      //     item.workplace = 5
+      //     break
+      //   case 'marcin.kalinowski':
+      //     item.workplace = 7
+      //     break
+      //   case 'pawel.potacki':
+      //     item.workplace = 8
+      //     break
+      //   case 'piotr.pogorzelski':
+      //     item.workplace = 6
+      //     break
+      //   default:
+      //     item.workplace = 0
+      // }
+
       switch (item.username) {
-        case 'bohdan.zborovskyi':
-          item.workplace = 4
-          break
-        case 'admin':
+        case 'kinga.sabak':
           item.workplace = 3
           break
-        case 'pawel.cudny':
-          item.workplace = 1
+        case 'dominik.śpiewak':
+          item.workplace = 4
           break
-        case 'filip.bartnicki':
+        case 'pawel.cudny':
           item.workplace = 2
           break
+        case 'filip.bartnicki':
+          item.workplace = 1
+          break
         case 'ilona.kaluska':
-          item.workplace = 6
+          item.workplace = 5
           break
-        case 'marcin.kalinowski':
-          item.workplace = 8
-          break
-        case 'pawel.potacki':
+        case 'krzysztof.dabrowski':
           item.workplace = 7
           break
+        case 'pawel.potacki':
+          item.workplace = 8
+          break
         case 'piotr.pogorzelski':
-          item.workplace = 5
+          item.workplace = 6
           break
         default:
           item.workplace = 0
@@ -120,33 +145,6 @@ function addWorkplaceForUsers(){
   })
 }
 
-// startWorkForUsers()
-
-// removeWorkForUsers()
-
-// addWorkplaceForUsers()
-
-function getWorkplacesSchema(){
-  User.find((err, userDocs) => {
-    var userList = []
-
-    Log.find((err, logDocs) => {
-
-      userDocs.forEach((item)=>{
-        if(item.workplace!=0)
-          userList.push({
-            username: item.username,
-            workplace: item.workplace,
-            workTimeStart: getPersonalLastLogTime(logDocs, item.username) || '',
-            workTimePlus: getPersonalLastLogTimePlus(logDocs, item.username) || '',
-            isWorkStarted: (getPersonalLastLogTime(logDocs, item.username))?true:false
-          })
-      })
-
-      console.log(userList)
-    })
-  })
-}
 
 function removeLogByOption(){
   var option = {
@@ -167,6 +165,17 @@ function removeLogByOption(){
 
 }
 
-getWorkplacesSchema()
+
+// startWorkForUsers()
+
+// removeWorkForUsers()
+
+addWorkplaceForUsers()
 
 // removeLogByOption()
+
+
+
+// closeAllLogs()
+// createEmptyLogs()
+// startBackup()
