@@ -6,7 +6,7 @@ const express = require('express')
       Log = require('../models/log'),
       {
         getUsersByUsername, getTimeString, checkIp, getUsers, getSumTime,
-        getPersonalLogs, getDateString, getPersonalLastLogTime,
+        getPersonalLogs, getDateString, getPersonalLastLogTime, getWorkplacesSchema,
         getPersonalLastLog, getAllLogs, getLogsSummary, checkLogStatus,
         getPersonalLastLogTimePlus, getPersonalLastLogTimeDesc, convertDate
       } = require('../actions/actions.js')
@@ -21,11 +21,10 @@ router.get('/login', (req, res) => res.render('login'))
 router.get('/profile', checkIp, (req, res) => {
 
   if(req.isAuthenticated()) {
+
     var username = res.locals.user.username
 
     Log.find((err, logDocs) => {
-      var time_start = getPersonalLastLogTime(logDocs, username) || ''
-      var time_plus = getPersonalLastLogTimePlus(logDocs, username) || ''
 
       var button = getPersonalLastLog(logDocs, username)
       var title = ''
@@ -46,7 +45,13 @@ router.get('/profile', checkIp, (req, res) => {
       }
 
       User.find((err, userDocs) => {
-        res.render('profile', { users: getUsers(userDocs), button_status: button, button_title: title, time_start: time_start, time_plus: time_plus})
+        res.render('profile', {
+          users: getUsers(userDocs),
+          button_status: button,
+          button_title: title,
+          time_start: getPersonalLastLogTime(logDocs, username) || '',
+          time_plus: getPersonalLastLogTimePlus(logDocs, username) || ''
+        })
       })
 
     })
@@ -67,8 +72,6 @@ router.get('/profile/my_logs', checkIp, (req, res) => {
     Log.find((err, logDocs) => {
 
       User.find((err, userDocs) => {
-        // console.log(getPersonalLastLogTime(logDocs, username))
-        // console.log(getPersonalLastLogTimePlus(logDocs, username))
         res.render('my_logs', {
           users: getUsers(userDocs),
           logs: getPersonalLogs(logDocs, username),
@@ -78,6 +81,29 @@ router.get('/profile/my_logs', checkIp, (req, res) => {
       })
 
     })
+  } else {
+    res.redirect('/users/login')
+  }
+})
+
+// Get Workplaces
+router.get('/workplaces', checkIp, (req, res) => {
+
+  if(req.isAuthenticated()) {
+
+    if(res.locals.user.status == 'admin') {
+
+      Log.find((err, logDocs) => {
+
+        User.find((err, userDocs) => {
+          res.render('workplaces', {
+            users: getUsers(userDocs),
+            workplaces: getWorkplacesSchema(logDocs)
+          })
+        })
+
+      })
+    }
   } else {
     res.redirect('/users/login')
   }
@@ -155,7 +181,8 @@ router.get('/profile/logs_by_user/:username', checkIp, (req, res) => {
             username: username,
             users: getUsers(userDocs),
             logs: getPersonalLogs(logDocs, username),
-            time_start: getPersonalLastLogTime(logDocs, username) || ''
+            time_start: getPersonalLastLogTime(logDocs, username) || '',
+            time_plus: getPersonalLastLogTimePlus(logDocs, username) || ''
           })
         })
 
@@ -191,12 +218,16 @@ router.post('/profile', checkIp, (req, res) => {
       logDocs = getPersonalLogs(logDocs, username)
 
       if(logDocs.length==1) {
-        checkLogStatus(logDocs[0], date, username, time)
+        var statusAndSumTime = checkLogStatus(logDocs[0], date, username, time)
+        status = statusAndSumTime.status
+        sum_time = statusAndSumTime.sum_time
       }
 
       if(logDocs.length>1) {
         for (var i = 0; i < logDocs.length; i++) {
-          checkLogStatus(logDocs[i], date, username, time)
+          var statusAndSumTime = checkLogStatus(logDocs[i], date, username, time)
+          status = statusAndSumTime.status
+          sum_time = statusAndSumTime.sum_time
         }
       }
 
